@@ -1,0 +1,9 @@
+{
+  "name": "news-terminal",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    "directory": "./public",
+    "run_worker_first": ["/api/*"]
+  }
+}
