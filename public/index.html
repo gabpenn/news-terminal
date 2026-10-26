@@ -107,8 +107,8 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 @media (prefers-reduced-motion:reduce){.tk{animation:none}.tape{overflow-x:auto}#spc{animation:none!important;padding-left:10px!important}}
 .crawl.sp{display:none;background:#00101f}.crawl.sp.on{display:flex}.crawl.sp .lbl{background:#0a64c8}
 #spc{display:inline-block;white-space:nowrap;padding:2px 0 2px 100%;animation:cr 60s linear infinite}#spc b{color:var(--am);font-weight:400;margin:0 12px}
-.adbar{display:none;align-items:center;gap:8px;padding:3px 10px;border-bottom:1px solid var(--ln);font-size:15px}
-.adbar small{color:#000;background:rgba(255,255,255,.75);padding:0 5px;letter-spacing:1px;font-size:12px}.adbar a{color:inherit;text-decoration:none;font-weight:600}
+.pbar{display:none;align-items:center;gap:8px;padding:3px 10px;border-bottom:1px solid var(--ln);font-size:15px}
+.pbar small{color:#000;background:rgba(255,255,255,.75);padding:0 5px;letter-spacing:1px;font-size:12px}.pbar a{color:inherit;text-decoration:none;font-weight:600}
 #rs{background:var(--hd);color:var(--dm);border:0;border-left:1px solid var(--ln);padding:0 12px;letter-spacing:1px;font-weight:600}#rs:hover{color:#000;background:var(--am)}
 #don{color:#000;background:var(--am);padding:0 7px;margin-right:8px;text-decoration:none;font-size:13px;letter-spacing:1px}
 .gbn{color:var(--up)!important;border-color:var(--up)!important;margin-right:4px}
@@ -123,7 +123,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 <div class="tape" id="tape"></div>
 <div class="crawl"><span class="lbl" id="clb">LATEST</span><div class="vp"><div id="crawl"></div></div></div>
 <div class="crawl sp" id="sp"><span class="lbl" id="spl">SPECIAL</span><div class="vp"><div id="spc"></div></div></div>
-<div class="adbar" id="adbar"><small>AD</small><a id="adbl" target="_blank" rel="noopener noreferrer sponsored"></a></div>
+<div class="pbar" id="pbar"><small>SPONSORED</small><a id="pbl" target="_blank" rel="noopener noreferrer sponsored"></a></div>
 <nav id="tabs"><button data-p="pn" class="on">NEWS</button><button data-p="pp">PINNED</button><button data-p="pm">MARKETS</button><button data-p="pc">CHAT</button></nav>
 <main>
  <section class="p act" id="pn"><div class="ph"><span><em>1</em>TOP NEWS</span><small id="flt">Main: English, relevant</small></div><div class="pb" id="news"></div></section>
@@ -349,10 +349,10 @@ function renderSpecial(){
 }
 const COLS=["#ff9d00","#00c176","#5aa9ff","#ff6b9d"];
 function showAd(){
- const bar=$("adbar");
+ const bar=$("pbar");
  if(!ADS.length){bar.style.display="none";return}
  const a=ADS[adi%ADS.length];bar.style.display="flex";bar.style.background=COLS[adi%COLS.length];bar.style.color="#000";
- const l=$("adbl");l.textContent=a.body;if(a.link&&/^https?:\/\//i.test(a.link))l.href=a.link;else l.removeAttribute("href");
+ const l=$("pbl");l.textContent=a.body;if(a.link&&/^https?:\/\//i.test(a.link))l.href=a.link;else l.removeAttribute("href");
 }
 function loadExtra(){
  sb.from("specials").select("*").eq("active",true).order("id",{ascending:false}).limit(1).then(({data})=>{SP=data&&data[0]||null;renderSpecial()});
