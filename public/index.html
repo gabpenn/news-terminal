@@ -121,6 +121,12 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 .crawl.sp[data-c=red]{background:#1a0505}.crawl.sp[data-c=red] .lbl{background:#c4281f}
 .crawl.sp[data-c=green]{background:#00150c}.crawl.sp[data-c=green] .lbl{background:#0a7a45}
 .crawl.sp[data-c=amber]{background:#1a1000}.crawl.sp[data-c=amber] .lbl{background:#b36b00}
+.bd{padding:4px 10px 8px}.bd .hd2{color:var(--dm);font-size:14px;margin:2px 0 10px}
+.br{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;margin:9px 0}.br.ni{grid-template-columns:1fr}
+.br img{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#111}
+.br .t2{display:flex;justify-content:space-between;align-items:baseline;font-size:19px;font-weight:500}.br .t2 em{font-style:normal;color:var(--dm);font-size:14px;margin-left:8px}.br .t2 b{font-weight:600}
+.br .bar{height:9px;background:#141414;margin-top:3px}.br .fill{height:100%;transition:width .6s}
+#ad textarea{background:#000;color:var(--tx);border:1px solid var(--ln);padding:6px;font:inherit}
 </style>
 </head>
 <body>
@@ -133,7 +139,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 <nav id="tabs"><button data-p="pn" class="on">NEWS</button><button data-p="pp">PINNED</button><button data-p="pm">MARKETS</button><button data-p="pc">CHAT</button></nav>
 <main>
  <section class="p act" id="pn"><div class="ph"><span><em>1</em>TOP NEWS</span><small id="flt">Main: English, relevant</small></div><div class="pb" id="news"></div></section>
- <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%" maxlength="600"><select id="sco"><option value="blue">Strip color: Blue</option><option value="red">Strip color: Red</option><option value="green">Strip color: Green</option><option value="amber">Strip color: Amber</option></select><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
+ <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>EVENT BOARD (results, polls, scores)</h4><textarea id="bdt" rows="7" placeholder="_counted,63&#10;_source,Central Elections Committee (unofficial)&#10;Likud,28.1,32,https://...photo.jpg&#10;Blue and White,22.4,26&#10;(name, number, seats, photo URL. Photo and seats are optional)"></textarea><div class="bt"><button id="bdset">UPDATE BOARD</button><button id="bdload" class="x">LOAD CURRENT</button><button id="bdclr" class="x">CLEAR BOARD</button></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%   (or type @board to copy the event board)" maxlength="600"><select id="sco"><option value="blue">Strip color: Blue</option><option value="red">Strip color: Red</option><option value="green">Strip color: Green</option><option value="amber">Strip color: Amber</option></select><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
  <div class="col">
   <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · not advice · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
    <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div class="pkh"><input id="pka" placeholder="Add any ticker: AAPL, TSLA, BINANCE:SOLUSDT" autocomplete="off" aria-label="Add ticker"><button id="pkb">ADD</button></div><div id="pkm" class="none"></div><div id="pkl"></div></div></section>
@@ -175,7 +181,7 @@ function renderNews(){
 function renderPins(){
  const pe=$("pe"),u=$("ups"),c=$("crawl");pe.innerHTML="";u.innerHTML="";
  const ev=EV||(EVENT.title?EVENT:null);if(ev){
-  pe.append(el("h3","",ev.title),el("p","",ev.desc||""));$("lv").textContent="LIVE";$("lv").style.color="var(--dn)";
+  pe.append(el("h3","",ev.title),el("p","",ev.desc||""));if(ev.board&&ev.board.rows&&ev.board.rows.length)pe.appendChild(boardEl(ev.board));$("lv").textContent="LIVE";$("lv").style.color="var(--dn)";
   items.filter(i=>ev.keywords.some(k=>i.h.toLowerCase().includes(k.toLowerCase()))).slice(0,20).forEach(i=>{
    const d=el("div","u1");d.append(el("span","t",hm(i.t)));const a=el("a","h",i.h+" ("+i.s+")");a.href=i.link;a.target="_blank";a.rel="noopener noreferrer";d.appendChild(a);u.appendChild(d)});
  }else{pe.appendChild(el("div","none","No pinned event right now."));$("lv").textContent=""}
@@ -317,7 +323,7 @@ let EV=null,AL=[];
 const liveAL=()=>AL.filter(a=>!a.expires_at||new Date(a.expires_at)>new Date());
 function loadAdminData(){
  if(!sb)return;
- sb.from("events").select("*").eq("active",true).order("id",{ascending:false}).limit(1).then(({data})=>{EV=data&&data[0]?{title:data[0].title,desc:data[0].descr||"",keywords:data[0].keywords||[]}:null;renderPins()});
+ sb.from("events").select("*").eq("active",true).order("id",{ascending:false}).limit(1).then(({data})=>{EV=data&&data[0]?{title:data[0].title,desc:data[0].descr||"",keywords:data[0].keywords||[],board:data[0].board||null}:null;renderPins();renderSpecial()});
  loadExtra();sb.from("alerts").select("*").order("id",{ascending:false}).limit(20).then(({data})=>{AL=data||[];renderPins();drawAlerts()});
 }
 function drawAlerts(){
@@ -341,6 +347,25 @@ function adminInit(){
  sb.channel("adm").on("postgres_changes",{event:"*",schema:"public",table:"events"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"alerts"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"specials"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"ads"},loadAdminData).subscribe();
  setInterval(renderPins,60000);
 }
+/* tablero de resultados */
+const BC=["#5aa9ff","#ff9d00","#00c176","#ff4d4d","#b58cff","#9a9a9a"];
+function csvLine(l){const o=[];let c="",q=false;for(const ch of l){if(ch==='"')q=!q;else if(ch===","&&!q){o.push(c);c=""}else c+=ch}o.push(c);return o.map(x=>x.trim())}
+function parseBoard(tx){const b={rows:[]};tx.split(/\r?\n/).forEach(l=>{if(!l.trim())return;const c=csvLine(l),n=c[0]||"";if(n.startsWith("_")){b[n.slice(1).toLowerCase()]=(c[1]||"").slice(0,80);return}const v=parseFloat(c[1]);if(!n||isNaN(v)||b.rows.length>=12)return;b.rows.push({n:n.slice(0,40),v,s:(c[2]||"").slice(0,10),i:/^https:\/\//i.test(c[3]||"")?c[3]:""})});return b}
+function boardText(b){const o=[];["counted","source","unit"].forEach(k=>{if(b[k])o.push("_"+k+","+b[k])});b.rows.forEach(r=>o.push([r.n,r.v,r.s||"",r.i||""].join(",").replace(/,+$/,"")));return o.join("\n")}
+function boardEl(b){
+ const d=el("div","bd"),u=b.unit==null?"%":b.unit,mx=Math.max.apply(null,b.rows.map(r=>r.v))||1;
+ const meta=[];if(b.counted)meta.push("Counted "+b.counted+"%");if(b.source)meta.push("Source: "+b.source);if(b.updated)meta.push("Updated "+new Date(b.updated).toTimeString().slice(0,5));
+ if(meta.length)d.appendChild(el("div","hd2",meta.join(" · ")));
+ b.rows.forEach((r,k)=>{
+  const row=el("div","br"+(r.i?"":" ni")),box=el("div");
+  if(r.i){const im=document.createElement("img");im.src=r.i;im.alt="";im.loading="lazy";im.referrerPolicy="no-referrer";im.onerror=()=>{im.remove();row.classList.add("ni")};row.appendChild(im)}
+  const t2=el("div","t2"),nm=el("span","",r.n);if(r.s)nm.appendChild(el("em","",r.s+" seats"));
+  t2.append(nm,el("b","",r.v+u));
+  const bar=el("div","bar"),f=el("div","fill");f.style.width=Math.max(1,r.v/mx*100)+"%";f.style.background=BC[k%BC.length];bar.appendChild(f);
+  box.append(t2,bar);row.appendChild(box);d.appendChild(row)});
+ return d;
+}
+function boardStrip(){const b=EV&&EV.board;if(!b||!b.rows||!b.rows.length)return"Waiting for results";const u=b.unit==null?"%":b.unit;const a=b.rows.slice(0,8).map(r=>r.n+" "+r.v+u+(r.s?" ("+r.s+")":""));if(b.counted)a.push("Counted "+b.counted+"%");return a.join(" | ")}
 /* extras: tira especial, anuncios, donacion, borrado a las 24 h */
 let SP=null,ADS=[],adi=0,crawlKey="",spKey="";
 const DONATE_URL="";   // pone aca tu link de donacion (Ko-fi, Buy Me a Coffee, PayPal...)
@@ -351,9 +376,9 @@ function renderSpecial(){
  const s=$("sp");
  if(!SP){s.classList.remove("on");spKey="";return}
  s.classList.add("on");s.dataset.c=SP.color||"blue";$("spl").textContent=SP.title;
- const k=SP.id+"|"+SP.items;if(k===spKey)return;spKey=k;
+ let its=SP.items;if(its.trim()==="@board")its=boardStrip();const k=SP.id+"|"+its;if(k===spKey)return;spKey=k;
  const c=$("spc");c.innerHTML="";
- SP.items.split("|").map(x=>x.trim()).filter(Boolean).forEach(x=>c.append(x,el("b","","//")));speed(c);
+ its.split("|").map(x=>x.trim()).filter(Boolean).forEach(x=>c.append(x,el("b","","//")));speed(c);
 }
 const COLS=["#ff9d00","#00c176","#5aa9ff","#ff6b9d"];
 function showAd(){
@@ -373,6 +398,9 @@ function drawAds(){
 setInterval(()=>{if(ADS.length){adi=(adi+1)%ADS.length;showAd()}},8000);
 setInterval(()=>{const c=Date.now()-864e5,n=ROWS.length;ROWS=ROWS.filter(r=>new Date(r.created_at)>c);if(ROWS.length!==n)redraw();renderNews()},60000);
 function extraInit(){
+ $("bdset").onclick=async()=>{const b=parseBoard($("bdt").value);if(!b.rows.length){$("amsg").textContent="No valid rows. Format: name,number,seats,photo";return}b.updated=new Date().toISOString();const {data,error}=await sb.from("events").update({board:b}).eq("active",true).select();$("amsg").textContent=error?error.message.slice(0,60):(!data||!data.length)?"Create a pinned event first":"Board updated";loadAdminData()};
+ $("bdclr").onclick=async()=>{await sb.from("events").update({board:null}).eq("active",true);$("amsg").textContent="Board cleared";loadAdminData()};
+ $("bdload").onclick=()=>{const b=EV&&EV.board;if(!b){$("amsg").textContent="No board yet";return}$("bdt").value=boardText(b)};
  $("sset").onclick=async()=>{const t=$("sti").value.trim(),it=$("sit").value.trim();if(!t||!it)return;await sb.from("specials").update({active:false}).eq("active",true);const {error}=await sb.from("specials").insert({title:t,items:it,color:$("sco").value});$("amsg").textContent=error?error.message.slice(0,60):"Special updated";loadExtra()};
  $("send2").onclick=async()=>{await sb.from("specials").update({active:false}).eq("active",true);$("amsg").textContent="Special ended";loadExtra()};
  $("adend").onclick=async()=>{await sb.from("ads").update({active:false}).eq("active",true);$("amsg").textContent="Ads ended";loadExtra()};
