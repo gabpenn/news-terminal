@@ -103,7 +103,7 @@ async function load(f) {
     let t = new Date(d || now).getTime();
     if (t > now + 3600000) t = now;
     return { t, title, link, source: f.name, region: f.region, topic: topicOf(title) };
-  }).filter((i) => i.title && i.link && !isNaN(i.t) && !/^clima hoy|pron[oó]stico del tiempo|hor[oó]scopo/i.test(i.title));
+  }).filter((i) => i.title && i.link && !isNaN(i.t) && i.t > now - 86400000 && !/^clima hoy|pron[oó]stico del tiempo|hor[oó]scopo|\b(horoscope|recipes?|kardashian|coupons?|best deals|crossword|wordle|quiz|celebrity|red carpet|gift guide)\b/i.test(i.title));
 }
 
 async function pool(list, fn, n) {
@@ -117,7 +117,40 @@ async function pool(list, fn, n) {
   return out;
 }
 
+
+const SB = "https://qfdliwiohllkujbjonoz.supabase.co";
+
+// Un feed por medio primero (variedad), con 3 medios argentinos adelante.
+function pickFeeds() {
+  const by = {};
+  F.forEach((f) => (by[f.name] = by[f.name] || []).push(f));
+  let order = [];
+  for (let i = 0, any = true; any; i++) { any = false; for (const k in by) if (by[k][i]) { order.push(by[k][i]); any = true; } }
+  const TOP = ["Infobae", "Clarín", "Ámbito"];
+  order = [...order.filter((f) => TOP.includes(f.name)), ...order.filter((f) => !TOP.includes(f.name))];
+  return order.slice(0, LIMIT);
+}
+
+// Recolector: corre solo cada minuto, lee los medios y guarda las noticias en Supabase.
+async function collect(env) {
+  const key = env.SUPABASE_SECRET_KEY;
+  if (!key) return;
+  const out = await pool(pickFeeds(), load, 6);
+  const seen = new Set();
+  const rows = out.flatMap((r) => (Array.isArray(r) ? r : []))
+    .filter((i) => !seen.has(i.link) && seen.add(i.link))
+    .map((i) => ({ link: i.link, title: i.title, source: i.source, region: i.region, topic: i.topic, published_at: new Date(i.t).toISOString() }));
+  const h = { apikey: key, "content-type": "application/json", prefer: "resolution=ignore-duplicates,return=minimal" };
+  for (let k = 0; k < rows.length; k += 300) {
+    await fetch(SB + "/rest/v1/news?on_conflict=link", { method: "POST", headers: h, body: JSON.stringify(rows.slice(k, k + 300)) });
+  }
+  await fetch(SB + "/rest/v1/news?published_at=lt." + encodeURIComponent(new Date(Date.now() - 86400000).toISOString()), { method: "DELETE", headers: { apikey: key } });
+}
+
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(collect(env));
+  },
   async fetch(req, env) {
     const url = new URL(req.url);
     if (url.pathname === "/api/quotes") {
@@ -136,14 +169,7 @@ export default {
       return Response.json({ q, updated: Date.now(), hasKey: !!key }, { headers: { "cache-control": "public, max-age=20" } });
     }
     if (url.pathname !== "/api/news") return new Response("Not found", { status: 404 });
-    // Un feed por medio primero (variedad), con 3 medios argentinos adelante.
-    const by = {};
-    F.forEach((f) => (by[f.name] = by[f.name] || []).push(f));
-    let order = [];
-    for (let i = 0, any = true; any; i++) { any = false; for (const k in by) if (by[k][i]) { order.push(by[k][i]); any = true; } }
-    const TOP = ["Infobae", "Clarín", "Ámbito"];
-    order = [...order.filter((f) => TOP.includes(f.name)), ...order.filter((f) => !TOP.includes(f.name))];
-    const list = order.slice(0, LIMIT);
+    const list = pickFeeds();
     const out = await pool(list, load, 6);
     // Para ver que fuentes andan: abri /api/news?debug=1
     if (url.searchParams.has("debug")) {
