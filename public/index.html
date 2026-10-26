@@ -184,7 +184,7 @@ function drawPk(){
 function openPk(){show("pm");$("pk").hidden=false;$("pks").value="";drawPk()}
 $("pks").oninput=drawPk;$("pkd").onclick=()=>{$("pk").hidden=true};
 /* chat */
-const SB_URL="https://qfdliwiohllkujbjonoz.supabase.co/rest/v1/",SB_KEY="sb_publishable_Xbq7_4dEDqPlxMh1DkXJlQ_nQjUSUxa";
+const SB_URL="https://qfdliwiohllkujbjonoz.supabase.co",SB_KEY="sb_publishable_Xbq7_4dEDqPlxMh1DkXJlQ_nQjUSUxa";
 const sb=(window.supabase&&SB_URL.startsWith("http"))?window.supabase.createClient(SB_URL,SB_KEY):null;
 let me=null,isAdmin=false,first=true,ROWS=[];
 function drawDraft(){
