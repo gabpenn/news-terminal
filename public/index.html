@@ -80,8 +80,8 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 .in button{background:var(--am);color:#000;border:0;font-weight:600;padding:0 14px;letter-spacing:1px}
 #foot{display:flex;border-top:1px solid var(--am-ln);background:var(--hd);overflow-x:auto;scrollbar-width:none}
 #foot::-webkit-scrollbar{display:none}
-#foot span{flex:1 0 auto;display:flex;justify-content:center;gap:5px;padding:3px 8px;border-right:1px solid var(--ln);font-size:14px}
-#foot b{color:var(--am);font-weight:500;letter-spacing:.5px}
+#foot span{flex:1 0 auto;display:flex;flex-direction:column;align-items:center;padding:2px 8px;border-right:1px solid var(--ln);max-width:150px;min-width:56px}
+#foot b{color:var(--am);font-weight:500;letter-spacing:.5px;font-size:15px}#foot i{font-style:normal;color:var(--dm);font-size:11px;letter-spacing:.5px;text-align:center;line-height:1.15}
 @media (max-width:799px){
  main{display:block;overflow:hidden}.col{display:contents}
  .p{display:none;height:100%}.p.act{display:flex}
@@ -107,7 +107,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 @media (prefers-reduced-motion:reduce){.tk{animation:none}.tape{overflow-x:auto}#spc{animation:none!important;padding-left:10px!important}}
 .crawl.sp{display:none;background:#00101f}.crawl.sp.on{display:flex}.crawl.sp .lbl{background:#0a64c8}
 #spc{display:inline-block;white-space:nowrap;padding:2px 0 2px 100%;animation:cr 60s linear infinite}#spc b{color:var(--am);font-weight:400;margin:0 12px}
-.adbar{display:none;align-items:center;gap:8px;padding:3px 10px;border-top:1px solid var(--ln);font-size:15px}
+.adbar{display:none;align-items:center;gap:8px;padding:3px 10px;border-bottom:1px solid var(--ln);font-size:15px}
 .adbar small{color:#000;background:rgba(255,255,255,.75);padding:0 5px;letter-spacing:1px;font-size:12px}.adbar a{color:inherit;text-decoration:none;font-weight:600}
 #rs{background:var(--hd);color:var(--dm);border:0;border-left:1px solid var(--ln);padding:0 12px;letter-spacing:1px;font-weight:600}#rs:hover{color:#000;background:var(--am)}
 #don{color:#000;background:var(--am);padding:0 7px;margin-right:8px;text-decoration:none;font-size:13px;letter-spacing:1px}
@@ -123,6 +123,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 <div class="tape" id="tape"></div>
 <div class="crawl"><span class="lbl" id="clb">LATEST</span><div class="vp"><div id="crawl"></div></div></div>
 <div class="crawl sp" id="sp"><span class="lbl" id="spl">SPECIAL</span><div class="vp"><div id="spc"></div></div></div>
+<div class="adbar" id="adbar"><small>AD</small><a id="adbl" target="_blank" rel="noopener noreferrer sponsored"></a></div>
 <nav id="tabs"><button data-p="pn" class="on">NEWS</button><button data-p="pp">PINNED</button><button data-p="pm">MARKETS</button><button data-p="pc">CHAT</button></nav>
 <main>
  <section class="p act" id="pn"><div class="ph"><span><em>1</em>TOP NEWS</span><small id="flt">Main: English, relevant</small></div><div class="pb" id="news"></div></section>
@@ -133,7 +134,6 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
   <section class="p" id="pc"><div id="au" hidden><p id="am">Log in or create an account to write in the chat.</p><input id="ae" type="email" placeholder="Email" autocomplete="email"><input id="ap" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password"><input id="an" placeholder="Display name (for sign up)" maxlength="24"><div class="bt"><button id="al">LOG IN</button><button id="as">SIGN UP</button><button id="ax" class="x">CANCEL</button></div></div><div class="ph"><span><em>4</em>CHAT</span><span><small id="cs">local preview</small> <button id="cb" class="hb" hidden></button></span></div><div class="pb" id="msgs"><div class="none">Shared chat arrives with user accounts. For now messages stay on your device.</div></div><div id="draft"></div><div class="in"><input id="mi" placeholder="Message" autocomplete="off" aria-label="Message"><button id="send">SEND</button></div></section>
  </div>
 </main>
-<div class="adbar" id="adbar"><small>AD</small><a id="adbl" target="_blank" rel="noopener noreferrer sponsored"></a></div>
 <div id="foot"></div>
 <script>
 /* ADMIN A MANO (hasta que exista el panel): edita estas dos lineas en GitHub */
@@ -356,11 +356,11 @@ function showAd(){
 }
 function loadExtra(){
  sb.from("specials").select("*").eq("active",true).order("id",{ascending:false}).limit(1).then(({data})=>{SP=data&&data[0]||null;renderSpecial()});
- sb.from("ads").select("*").eq("active",true).order("id",{ascending:false}).limit(20).then(({data})=>{ADS=(data||[]).filter(a=>!a.expires_at||new Date(a.expires_at)>new Date());adi=0;showAd();drawAds()});
+ sb.from("ads").select("*").eq("active",true).order("id",{ascending:false}).limit(20).then(({data,error})=>{if(error)$("amsg").textContent="ADS ERROR: "+error.message.slice(0,60);ADS=(data||[]).filter(a=>!a.expires_at||new Date(a.expires_at)>new Date());adi=0;showAd();drawAds()});
 }
 function drawAds(){
  const l=$("adlist");if(!l)return;l.innerHTML="";
- ADS.forEach(a=>{const r=el("div","al");r.appendChild(el("span","",a.body));const b=el("button","x","DELETE");b.onclick=async()=>{await sb.from("ads").update({active:false}).eq("id",a.id);loadExtra()};r.appendChild(b);l.appendChild(r)});
+ ADS.forEach(a=>{const r=el("div","al");r.appendChild(el("span","",a.body));const b=el("button","x","DELETE");b.onclick=async()=>{const {data,error}=await sb.from("ads").delete().eq("id",a.id).select();$("amsg").textContent=error?"DELETE ERROR: "+error.message.slice(0,50):(!data||!data.length)?"NOT DELETED (no permission)":"Ad deleted";ADS=ADS.filter(x=>x.id!==a.id);adi=0;showAd();drawAds();loadExtra()};r.appendChild(b);l.appendChild(r)});
 }
 setInterval(()=>{if(ADS.length){adi=(adi+1)%ADS.length;showAd()}},8000);
 setInterval(()=>{const c=Date.now()-864e5,n=ROWS.length;ROWS=ROWS.filter(r=>new Date(r.created_at)>c);if(ROWS.length!==n)redraw();renderNews()},60000);
@@ -383,8 +383,18 @@ $("cmd").onkeydown=function(e){
  $("flt").textContent=mode==="main"?"Main: English, relevant":region?"Argentina":filt?"Filter: "+filt:"Everything";$("cm").textContent="OK";show("pn");renderNews();
 };
 $("rs").onclick=()=>{mode="main";region="";filt="";$("flt").textContent="Main: English, relevant";$("cm").textContent="MAIN";show("pn");renderNews()};
-const Z=[["MEX","America/Mexico_City"],["USA","America/New_York"],["CAN","America/Toronto"],["BRA","America/Sao_Paulo"],["ARG","America/Argentina/Buenos_Aires"],["GBR","Europe/London"],["ESP","Europe/Madrid"],["FRA","Europe/Paris"],["DEU","Europe/Berlin"],["ITA","Europe/Rome"],["ZAF","Africa/Johannesburg"],["TUR","Europe/Istanbul"],["SAU","Asia/Riyadh"],["RUS","Europe/Moscow"],["IND","Asia/Kolkata"],["IDN","Asia/Jakarta"],["CHN","Asia/Shanghai"],["KOR","Asia/Seoul"],["JPN","Asia/Tokyo"],["AUS","Australia/Sydney"]];
-function clocks(){const f=$("foot");f.innerHTML="";Z.forEach(z=>{const s=el("span");s.append(el("b","",z[0]),new Date().toLocaleTimeString("en-GB",{timeZone:z[1],hour:"2-digit",minute:"2-digit"}));f.appendChild(s)});$("clk").textContent=new Date().toLocaleString("en-GB")}
+const Z=[["USA","America/New_York"],["CAN","America/Toronto"],["MEX","America/Mexico_City"],["CUB","America/Havana"],["COL","America/Bogota"],["PER","America/Lima"],["VEN","America/Caracas"],["CHL","America/Santiago"],["BRA","America/Sao_Paulo"],["ARG","America/Argentina/Buenos_Aires"],
+["GBR","Europe/London"],["PRT","Europe/Lisbon"],["MAR","Africa/Casablanca"],["ESP","Europe/Madrid"],["FRA","Europe/Paris"],["DEU","Europe/Berlin"],["ITA","Europe/Rome"],["NLD","Europe/Amsterdam"],["BEL","Europe/Brussels"],["CHE","Europe/Zurich"],["POL","Europe/Warsaw"],["SWE","Europe/Stockholm"],["NOR","Europe/Oslo"],["DZA","Africa/Algiers"],["NGA","Africa/Lagos"],
+["UKR","Europe/Kyiv"],["ROU","Europe/Bucharest"],["GRC","Europe/Athens"],["FIN","Europe/Helsinki"],["ISR","Asia/Jerusalem"],["EGY","Africa/Cairo"],["LBN","Asia/Beirut"],["SYR","Asia/Damascus"],["JOR","Asia/Amman"],["ZAF","Africa/Johannesburg"],
+["TUR","Europe/Istanbul"],["RUS","Europe/Moscow"],["SAU","Asia/Riyadh"],["IRQ","Asia/Baghdad"],["QAT","Asia/Qatar"],["ETH","Africa/Addis_Ababa"],["KEN","Africa/Nairobi"],["IRN","Asia/Tehran"],["ARE","Asia/Dubai"],["AFG","Asia/Kabul"],["PAK","Asia/Karachi"],["KAZ","Asia/Almaty"],["IND","Asia/Kolkata"],["BGD","Asia/Dhaka"],
+["THA","Asia/Bangkok"],["VNM","Asia/Ho_Chi_Minh"],["IDN","Asia/Jakarta"],["CHN","Asia/Shanghai"],["HKG","Asia/Hong_Kong"],["TWN","Asia/Taipei"],["SGP","Asia/Singapore"],["MYS","Asia/Kuala_Lumpur"],["PHL","Asia/Manila"],["AUS","Australia/Sydney"],["KOR","Asia/Seoul"],["PRK","Asia/Pyongyang"],["JPN","Asia/Tokyo"],["NZL","Pacific/Auckland"]];
+function offMin(tz,now){const p=new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"numeric",day:"numeric",hour:"numeric",minute:"numeric"}).formatToParts(now).reduce((a,x)=>(a[x.type]=+x.value,a),{});return Math.round((Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute)-Math.floor(now/6e4)*6e4)/6e4)}
+function clocks(){
+ const now=new Date(),g={};
+ Z.forEach(z=>{const o=offMin(z[1],now);(g[o]=g[o]||{o,tz:z[1],c:[]}).c.push(z[0])});
+ const f=$("foot");f.innerHTML="";
+ Object.values(g).sort((a,b)=>a.o-b.o).forEach(x=>{const s=el("span");s.title=x.c.join(" ");s.append(el("b","",now.toLocaleTimeString("en-GB",{timeZone:x.tz,hour:"2-digit",minute:"2-digit"})),el("i","",x.c.join(" ")));f.appendChild(s)});
+ $("clk").textContent=now.toLocaleString("en-GB")}
 setInterval(clocks,1000);clocks();
 renderNews();renderPins();renderM();load();loadQ();chatInit();adminInit();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
