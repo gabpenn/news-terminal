@@ -127,6 +127,11 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 .br img{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#111}
 .br .t2{display:flex;justify-content:space-between;align-items:baseline;font-size:19px;font-weight:500}.br .t2 em{font-style:normal;color:var(--dm);font-size:14px;margin-left:8px}.br .t2 b{font-weight:600}
 .br .bar{height:9px;background:#141414;margin-top:3px}.br .fill{height:100%;transition:width .6s}
+#ch{position:absolute;inset:0;background:#000;z-index:6;display:flex;flex-direction:column;padding:8px 10px;overflow:auto}#ch[hidden]{display:none}
+.chh{display:flex;justify-content:space-between;align-items:flex-start}.chh b{font-size:22px;font-weight:600;letter-spacing:1px}.chh small{color:var(--dm);margin-left:8px;font-size:15px}.chh button,.chr button{background:none;border:1px solid var(--ln);color:var(--dm);padding:2px 10px;letter-spacing:1px}.chh button:hover,.chr button:hover{color:#000;background:var(--am);border-color:var(--am)}
+.chp{display:flex;gap:12px;align-items:baseline;margin:2px 0 6px}.chp b{font-size:28px;font-weight:600}.chr{display:flex;gap:4px;margin-bottom:6px}.chr button.on{background:var(--am);color:#000;border-color:var(--am)}
+#chg{width:100%}#chg svg{display:block;width:100%;touch-action:none}#chm{color:var(--tx);font-size:16px;min-height:22px;margin-top:4px}.chs{color:var(--dm);font-size:12px;margin-top:auto;padding-top:10px}
+.q:hover{background:#0d0d0d}
 .sr{display:flex;gap:4px;padding:4px 8px;border-bottom:1px solid var(--ln)}.sr input{flex:1;min-width:0;background:#000;color:var(--tx);border:1px solid var(--ln);padding:4px 8px}
 .sr button,#mup button{background:none;border:1px solid var(--ln);color:var(--dm);padding:0 10px;letter-spacing:1px}.sr button:hover,#mup button:hover{color:#000;background:var(--am);border-color:var(--am)}
 #mup{padding:6px 8px;border-bottom:1px solid var(--ln);background:#080808}#mup p{margin:0 0 4px;color:var(--dm);font-size:14px}#mup input{width:100%;background:#000;color:var(--tx);border:1px solid var(--ln);padding:4px 8px;margin-bottom:6px}
@@ -154,7 +159,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
  <section class="p act" id="pn"><div class="ph"><span><em>1</em>TOP NEWS</span><small id="flt">Main: English, relevant</small></div><div class="sr"><input id="sq" placeholder="Search headlines (last 24h, all sources)" autocomplete="off" aria-label="Search headlines"><button id="mub">MUTE</button></div><div id="mup" hidden><p>Hide words (separated by commas)</p><input id="mw" placeholder="e.g. kardashian, horoscope" autocomplete="off"><p>Hide sources (separated by commas)</p><input id="ms" list="srcs" placeholder="e.g. Daily Mail" autocomplete="off"><datalist id="srcs"></datalist><button id="mdone">SAVE</button> <button id="mclr">CLEAR ALL</button></div><div class="pb" id="news"></div></section>
  <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>EVENT BOARD: results with bars (optional)</h4><div class="bhelp">Fill one row per party or candidate. Name and % are enough. Seats and photo link are optional. Then press UPDATE BOARD and it shows up in the pinned event and, if you type @board in the special strip, also there.</div><div class="bf"><input id="bdc" placeholder="% counted (e.g. 63)" inputmode="decimal"><input id="bds" placeholder="Source (e.g. Official committee, unofficial)" maxlength="80"></div><div id="bdr"></div><div class="bt"><button id="bdadd" class="x">+ ADD ROW</button></div><div class="bt"><button id="bdset">UPDATE BOARD</button><button id="bdload" class="x">LOAD CURRENT</button><button id="bdclr" class="x">CLEAR BOARD</button></div><div id="bdm" class="bhelp" style="color:var(--am);font-size:15px"></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%   (or type @board to copy the event board)" maxlength="600"><select id="sco"><option value="blue">Strip color: Blue</option><option value="red">Strip color: Red</option><option value="green">Strip color: Green</option><option value="amber">Strip color: Amber</option></select><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>COUNTDOWNS (rotating strip, you can add many)</h4><input id="cdt" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="60"><div class="bf"><input id="cdd" type="datetime-local"><select id="cdz"></select></div><div class="bhelp">Pick the date and time as it will be in the place where it happens, and choose that place. The strip shows that place's local time and also each visitor's own local time.</div><div class="bt"><button id="cdadd">ADD COUNTDOWN</button></div><div id="cdlist"></div><h4>REPORTED MESSAGES</h4><div id="rplist"></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
  <div class="col">
-  <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · not advice · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
+  <section class="p" id="pm"><div id="ch" hidden><div class="chh"><span><b id="cht"></b><small id="chn"></small></span><button id="chx">CLOSE</button></div><div class="chp"><b id="chv"></b><span id="chc"></span></div><div class="chr"><button data-r="1d" class="on">1D</button><button data-r="5d">5D</button><button data-r="1m">1M</button><button data-r="1y">1Y</button></div><div id="chg"></div><div id="chm"></div><div class="chs">Delayed data, not investment advice. Source: Yahoo Finance.</div></div><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · not advice · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
    <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div class="pkh"><input id="pka" placeholder="Add any ticker: AAPL, TSLA, BINANCE:SOLUSDT" autocomplete="off" aria-label="Add ticker"><button id="pkb">ADD</button></div><div id="pkm" class="none"></div><div id="pkl"></div></div></section>
   <section class="p" id="pc"><div id="au" hidden><p id="am">Log in or create an account to write in the chat.</p><input id="ae" type="email" placeholder="Email" autocomplete="email"><input id="ap" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password"><input id="an" placeholder="Display name (for sign up)" maxlength="24"><label class="tc"><input type="checkbox" id="atc"><span>To sign up: I am 16 or older and accept the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label><div class="bt"><button id="al">LOG IN</button><button id="as">SIGN UP</button><button id="ax" class="x">CANCEL</button></div></div><div class="ph"><span><em>4</em>CHAT</span><span><small id="cs">local preview</small> <button id="cb" class="hb" hidden></button></span></div><div class="pb" id="msgs"><div class="none">Shared chat arrives with user accounts. For now messages stay on your device.</div></div><div id="draft"></div><div class="in"><input id="mi" placeholder="Message" autocomplete="off" aria-label="Message"><button id="send">SEND</button></div></section>
  </div>
@@ -238,15 +243,28 @@ function loadApi(){
  }).catch(()=>{$("st").textContent="NEWS OFFLINE";loaded=true;if(!items.length){const b=$("news");b.innerHTML="";b.appendChild(el("div","none","Could not load headlines. Open /api/news?debug=1 to see which sources fail."))}});
 }
 /* markets */
-const IDX=[["SPY","S&P 500 ETF","SPY"],["DIA","Dow ETF","DIA"],["QQQ","Nasdaq ETF","QQQ"],["USO","Oil ETF","USO"],["GLD","Gold ETF","GLD"],["BTC","Bitcoin","BINANCE:BTCUSDT"],["ETH","Ethereum","BINANCE:ETHUSDT"]];
+const IDX=[["SPY","S&P 500 ETF","SPY"],["DIA","Dow ETF","DIA"],["QQQ","Nasdaq ETF","QQQ"],["GOLD","Gold futures","yh:GC=F"],["SILVER","Silver futures","yh:SI=F"],["WTI","WTI crude oil","yh:CL=F"],["BTC","Bitcoin","BINANCE:BTCUSDT"],["ETH","Ethereum","BINANCE:ETHUSDT"]];
 const CO=[["Technology",[["AAPL","Apple"],["MSFT","Microsoft"],["NVDA","Nvidia"],["GOOGL","Alphabet"],["AMZN","Amazon"],["META","Meta"],["TSLA","Tesla"],["AMD","AMD"],["TSM","TSMC"]]],["Argentina",[["YPF","YPF"],["MELI","MercadoLibre"],["GGAL","Grupo Galicia"],["BMA","Banco Macro"],["PAM","Pampa Energía"],["VIST","Vista Energy"],["TEO","Telecom Argentina"]]],["Energy",[["XOM","Exxon Mobil"],["CVX","Chevron"],["SHEL","Shell"],["PBR","Petrobras"]]],["Finance",[["JPM","JPMorgan"],["GS","Goldman Sachs"],["BAC","Bank of America"]]],["Consumer",[["KO","Coca-Cola"],["MCD","McDonalds"],["WMT","Walmart"],["DIS","Disney"],["NFLX","Netflix"]]],["Other",[["VALE","Vale"],["BABA","Alibaba"],["ITUB","Itaú Unibanco"]]]];
 const NAME={};CO.forEach(g=>g[1].forEach(c=>NAME[c[0]]=c[1]));
+let AR={fx:[],risk:null};
+const EXC=[["NYSE / Nasdaq","America/New_York",570,960],["London","Europe/London",480,990],["Frankfurt","Europe/Berlin",540,1050],["Tokyo","Asia/Tokyo",540,930],["Hong Kong","Asia/Hong_Kong",570,960],["Shanghai","Asia/Shanghai",570,900],["Buenos Aires","America/Argentina/Buenos_Aires",660,1020],["Sao Paulo","America/Sao_Paulo",600,1020]];
+function exState(tz,op,cl){
+ const p=new Intl.DateTimeFormat("en-US",{timeZone:tz,weekday:"short",hourCycle:"h23",hour:"numeric",minute:"numeric"}).formatToParts(new Date()).reduce((a,x)=>(a[x.type]=x.value,a),{});
+ const wd=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(p.weekday),m=+p.hour*60+ +p.minute,wk=d=>d>=1&&d<=5;
+ const fmt=n=>n>=1440?Math.floor(n/1440)+"d "+Math.floor(n%1440/60)+"h":Math.floor(n/60)+"h "+String(n%60).padStart(2,"0")+"m";
+ if(wk(wd)&&m>=op&&m<cl)return{open:true,txt:"closes in "+fmt(cl-m)};
+ if(wk(wd)&&m<op)return{open:false,txt:"opens in "+fmt(op-m)};
+ for(let d=1;d<=7;d++){if(wk((wd+d)%7))return{open:false,txt:"opens in "+fmt(1440-m+(d-1)*1440+op)}}
+ return{open:false,txt:"closed"};
+}
+const n0=v=>Math.round(v).toLocaleString("en-US");
+function loadAR(){fetch("/api/ar").then(r=>r.json()).then(d=>{AR={fx:d.fx||[],risk:d.risk||null};renderM()}).catch(()=>{})}
 let watch=["AAPL","NVDA","YPF","MELI","XOM"],Q={};
 try{const w=JSON.parse(localStorage.getItem("nt-watch")||"null");if(Array.isArray(w))watch=w.filter(s=>typeof s==="string"&&/^[A-Z0-9.^_:-]{1,20}$/.test(s))}catch(e){}
 const saveW=()=>{try{localStorage.setItem("nt-watch",JSON.stringify(watch))}catch(e){}if(typeof sb!=="undefined"&&sb&&typeof me!=="undefined"&&me)sb.from("watchlists").upsert({user_id:me.id,symbols:watch})};
 const px=p=>p.toLocaleString("en-US",{minimumFractionDigits:p>=10?2:4,maximumFractionDigits:p>=10?2:4});
 const key=s=>s;
-function qrow(code,name,k){const q=Q[k],r=el("div","q"),a=el("span","",code);a.appendChild(el("small","",name));
+function qrow(code,name,k){const q=Q[k],r=el("div","q"),a=el("span","",code);a.appendChild(el("small","",name));r.style.cursor="pointer";r.title="Click for chart";r.tabIndex=0;r.onclick=()=>openChart(code,name,k);r.onkeydown=e=>{if(e.key==="Enter")openChart(code,name,k)};
  if(!q){r.append(a,el("span","","—"),el("span","dm",""));return r}
  const c=(q.p/q.o-1)*100;r.append(a,el("span","",px(q.p)),el("span",c>=0?"up":"dn",(c>=0?"+":"")+c.toFixed(2)+"%"));return r}
 function setTape(src){
@@ -263,11 +281,52 @@ function renderM(){
  const sc=el("div","sec");sc.appendChild(el("span","","WATCHLIST"));const eb=el("button","","EDIT");eb.onclick=openPk;sc.appendChild(eb);b.appendChild(sc);
  if(!watch.length)b.appendChild(el("div","none","Empty. Press EDIT to choose companies."));
  watch.forEach(s=>b.appendChild(qrow(s,NAME[s],key(s.toLowerCase()))));
- IDX.map(x=>[x[0],x[2].toLowerCase()]).concat(watch.map(s=>[s,key(s.toLowerCase())])).forEach(a=>{const q=Q[a[1]];if(!q)return;const c=(q.p/q.o-1)*100,e=el("span");e.append(el("em","",a[0]),el("b",c>=0?"up":"dn",px(q.p)+" "+(c>=0?"+":"")+c.toFixed(2)+"%"));e.lastChild.style.fontWeight=400;t.appendChild(e)});setTape(t);
+ if(AR.fx.length||AR.risk){
+  b.appendChild(el("div","sec")).appendChild(el("span","","ARGENTINA · USD in pesos · country risk"));
+  const LB={oficial:"Official",blue:"Blue",bolsa:"MEP",contadoconliqui:"CCL"};
+  ["oficial","blue","bolsa","contadoconliqui"].forEach(k=>{const x=AR.fx.find(y=>y.k===k);if(!x)return;const r=el("div","q"),a=el("span","","USD "+LB[k]);a.appendChild(el("small","","buy "+n0(x.b)));r.append(a,el("span","","$ "+n0(x.s)),el("span","dm","sell"));b.appendChild(r)});
+  if(AR.risk){const r=el("div","q"),a=el("span","","Country risk");a.appendChild(el("small","","EMBI points"));r.append(a,el("span","",n0(AR.risk.v)),el("span","dm",""));b.appendChild(r)}
+ }
+ b.appendChild(el("div","sec")).appendChild(el("span","","MARKET HOURS · holidays not included"));
+ EXC.forEach(x=>{const s=exState(x[1],x[2],x[3]),r=el("div","q"),a=el("span","",x[0]);a.appendChild(el("small","",s.txt));r.append(a,el("span",s.open?"up":"dm",s.open?"OPEN":"CLOSED"),el("span","dm",new Date().toLocaleTimeString("en-GB",{timeZone:x[1],hour:"2-digit",minute:"2-digit"})));b.appendChild(r)});
+ IDX.map(x=>[x[0],x[2].toLowerCase()]).concat(watch.map(s=>[s,key(s.toLowerCase())])).forEach(a=>{const q=Q[a[1]];if(!q)return;const c=(q.p/q.o-1)*100,e=el("span");e.append(el("em","",a[0]),el("b",c>=0?"up":"dn",px(q.p)+" "+(c>=0?"+":"")+c.toFixed(2)+"%"));e.lastChild.style.fontWeight=400;t.appendChild(e)});const bl=AR.fx.find(y=>y.k==="blue");if(bl){const e=el("span");e.append(el("em","","USD BLUE"),el("b","","$ "+n0(bl.s)));e.lastChild.style.fontWeight=400;t.appendChild(e)}
+ if(AR.risk){const e=el("span");e.append(el("em","","RISK"),el("b","",n0(AR.risk.v)));e.lastChild.style.fontWeight=400;t.appendChild(e)}
+ setTape(t);
 }
+/* graficos */
+const ySym=k=>{let s=k.toUpperCase();if(s.startsWith("YH:"))return s.slice(3);const m=s.match(/^BINANCE:([A-Z0-9]+)USDT$/);if(m)return m[1]+"-USD";if(s.includes(":"))s=s.split(":").pop();return s.replace(/\./g,"-")};
+let CH=null;
+const SV=(tag,a)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const k in a)e.setAttribute(k,a[k]);return e};
+function openChart(code,name,k){CH={code,name,k,r:"1d"};$("cht").textContent=code;$("chn").textContent=name||"";$("ch").hidden=false;chRange("1d")}
+function chRange(r){CH.r=r;document.querySelectorAll(".chr button").forEach(b=>b.classList.toggle("on",b.dataset.r===r));$("chg").innerHTML="";$("chv").textContent="";$("chc").textContent="";$("chm").textContent="Loading chart...";
+ const my=CH;fetch("/api/chart?s="+encodeURIComponent(ySym(CH.k))+"&r="+r).then(x=>x.json()).then(d=>{if(CH!==my||CH.r!==r)return;if(d.err||!d.p||d.p.length<2){$("chm").textContent="Chart not available for this symbol right now.";return}drawChart(d,r)}).catch(()=>{if(CH===my)$("chm").textContent="Chart not available right now."})}
+function drawChart(d,r){
+ const g=$("chg");g.innerHTML="";const P=d.p,T=d.t,n=P.length,last=P[n-1],base=d.prev||P[0];
+ const W=Math.max(280,g.clientWidth||320),H=Math.min(280,Math.max(190,Math.round(W*.55))),pr=56,pt=8,pb=20,iw=W-pr;
+ let lo=Math.min.apply(null,P),hi=Math.max.apply(null,P);if(r==="1d"&&d.prev){lo=Math.min(lo,d.prev);hi=Math.max(hi,d.prev)}
+ const pad=(hi-lo)*.08||hi*.01||1;lo-=pad;hi+=pad;
+ const X=i=>i/(n-1)*iw,Y=v=>pt+(hi-v)/(hi-lo)*(H-pt-pb),up=last>=base,col=up?"#00c176":"#ff4d4d";
+ const ch=last-base,pc=ch/base*100;
+ $("chv").textContent=px(last)+(d.cc?" "+d.cc:"");$("chc").textContent=(ch>=0?"+":"")+px(Math.abs(ch)).replace(/^/,ch<0?"-":"")+" ("+(ch>=0?"+":"")+pc.toFixed(2)+"%)";$("chc").className=up?"up":"dn";
+ const s=SV("svg",{viewBox:"0 0 "+W+" "+H,width:W,height:H});
+ [0,.5,1].forEach(f=>{const v=lo+(hi-lo)*f,y=Y(v);s.appendChild(SV("line",{x1:0,x2:iw,y1:y,y2:y,stroke:"#1c1c1c"}));const t=SV("text",{x:iw+4,y:y+4,fill:"#767676","font-size":12});t.textContent=px(v);s.appendChild(t)});
+ if(r==="1d"&&d.prev){const y=Y(d.prev);s.appendChild(SV("line",{x1:0,x2:iw,y1:y,y2:y,stroke:"#555","stroke-dasharray":"3 3"}))}
+ let path="M"+P.map((v,i)=>X(i).toFixed(1)+" "+Y(v).toFixed(1)).join(" L");
+ s.appendChild(SV("path",{d:path+" L"+iw+" "+(H-pb)+" L0 "+(H-pb)+" Z",fill:col,opacity:".12"}));
+ s.appendChild(SV("path",{d:path,fill:"none",stroke:col,"stroke-width":1.6}));
+ const fm=ts=>{const dt=new Date(ts*1000);return r==="1y"?dt.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):r==="1m"?dt.toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}):dt.toLocaleString("en-US",{weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false})};
+ const t1=SV("text",{x:0,y:H-5,fill:"#767676","font-size":12});t1.textContent=fm(T[0]);const t2=SV("text",{x:iw,y:H-5,fill:"#767676","font-size":12,"text-anchor":"end"});t2.textContent=fm(T[n-1]);s.append(t1,t2);
+ const vl=SV("line",{y1:pt,y2:H-pb,stroke:"#767676",opacity:0}),dot=SV("circle",{r:4,fill:col,opacity:0});s.append(vl,dot);
+ const mv=e=>{const rc=s.getBoundingClientRect(),xi=(e.clientX-rc.left)/rc.width*W;let i=Math.round(xi/iw*(n-1));i=Math.max(0,Math.min(n-1,i));vl.setAttribute("x1",X(i));vl.setAttribute("x2",X(i));vl.setAttribute("opacity",1);dot.setAttribute("cx",X(i));dot.setAttribute("cy",Y(P[i]));dot.setAttribute("opacity",1);$("chm").textContent=fm(T[i])+"  ·  "+px(P[i])};
+ s.addEventListener("pointermove",mv);s.addEventListener("pointerdown",mv);
+ g.appendChild(s);$("chm").textContent="Touch or hover the chart to see prices";
+}
+$("chx").onclick=()=>{$("ch").hidden=true;CH=null};
+document.querySelectorAll(".chr button").forEach(b=>b.onclick=()=>{if(CH)chRange(b.dataset.r)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&CH){$("ch").hidden=true;CH=null}});
 function loadQ(){
  const ks=IDX.map(x=>x[2]).concat(watch.map(s=>key(s.toLowerCase())));
- fetch("/api/quotes?s="+ks.join(",")).then(r=>r.json()).then(d=>{Q=d.q||{};renderM()}).catch(()=>{});
+ fetch("/api/quotes?s="+encodeURIComponent(ks.join(","))).then(r=>r.json()).then(d=>{Q=d.q||{};renderM()}).catch(()=>{});
 }
 function drawPk(){
  const q=$("pks").value.trim().toLowerCase(),l=$("pkl");l.innerHTML="";
@@ -363,7 +422,7 @@ function adminInit(){
  $("eend").onclick=async()=>{await sb.from("events").update({active:false}).eq("active",true);$("amsg").textContent="Event ended";loadAdminData()};
  $("aadd").onclick=()=>{const v=$("alt").value.trim();if(!v)return;addAlert(v,null,+$("aexp").value);$("alt").value=""};
  loadAdminData();
- sb.channel("adm").on("postgres_changes",{event:"*",schema:"public",table:"events"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"alerts"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"specials"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"ads"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"countdowns"},loadCD).on("postgres_changes",{event:"*",schema:"public",table:"reports"},loadReports).subscribe();
+ sb.channel("adm").on("postgres_changes",{event:"*",schema:"public",table:"events"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"alerts"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"specials"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"promos"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"countdowns"},loadCD).on("postgres_changes",{event:"*",schema:"public",table:"reports"},loadReports).subscribe();
  setInterval(renderPins,60000);
 }
 /* cuenta regresiva (hora local de cada visitante) */
@@ -444,11 +503,11 @@ function showAd(){
 }
 function loadExtra(){
  sb.from("specials").select("*").eq("active",true).order("id",{ascending:false}).limit(1).then(({data})=>{SP=data&&data[0]||null;renderSpecial()});
- sb.from("ads").select("*").eq("active",true).order("id",{ascending:false}).limit(20).then(({data,error})=>{if(error)$("amsg").textContent="ADS ERROR: "+error.message.slice(0,60);ADS=(data||[]).filter(a=>!a.expires_at||new Date(a.expires_at)>new Date());adi=0;showAd();drawAds()});
+ sb.from("promos").select("*").eq("active",true).order("id",{ascending:false}).limit(20).then(({data,error})=>{if(error)$("amsg").textContent="ADS ERROR: "+error.message.slice(0,60);ADS=(data||[]).filter(a=>!a.expires_at||new Date(a.expires_at)>new Date());adi=0;showAd();drawAds()});
 }
 function drawAds(){
  const l=$("adlist");if(!l)return;l.innerHTML="";
- ADS.forEach(a=>{const r=el("div","al");r.appendChild(el("span","",a.body));const b=el("button","x","DELETE");b.onclick=async()=>{const {data,error}=await sb.from("ads").delete().eq("id",a.id).select();$("amsg").textContent=error?"DELETE ERROR: "+error.message.slice(0,50):(!data||!data.length)?"NOT DELETED (no permission)":"Ad deleted";ADS=ADS.filter(x=>x.id!==a.id);adi=0;showAd();drawAds();loadExtra()};r.appendChild(b);l.appendChild(r)});
+ ADS.forEach(a=>{const r=el("div","al");r.appendChild(el("span","",a.body));const b=el("button","x","DELETE");b.onclick=async()=>{const {data,error}=await sb.from("promos").delete().eq("id",a.id).select();$("amsg").textContent=error?"DELETE ERROR: "+error.message.slice(0,50):(!data||!data.length)?"NOT DELETED (no permission)":"Ad deleted";ADS=ADS.filter(x=>x.id!==a.id);adi=0;showAd();drawAds();loadExtra()};r.appendChild(b);l.appendChild(r)});
 }
 setInterval(()=>{if(ADS.length){adi=(adi+1)%ADS.length;showAd()}},8000);
 setInterval(()=>{const c=Date.now()-864e5,n=ROWS.length;ROWS=ROWS.filter(r=>new Date(r.created_at)>c);if(ROWS.length!==n)redraw();renderNews()},60000);
@@ -466,8 +525,8 @@ function extraInit(){
   const {error}=await sb.from("countdowns").insert({title:t,target:new Date(tg).toISOString(),tz});$("amsg").textContent=error?(/tz|countdowns/i.test(error.message)?"Run update6.sql and update7.sql in Supabase first":error.message.slice(0,60)):"Countdown added";$("cdt").value="";$("cdd").value="";loadCD()};
  $("sset").onclick=async()=>{const t=$("sti").value.trim(),it=$("sit").value.trim();if(!t||!it)return;await sb.from("specials").update({active:false}).eq("active",true);const {error}=await sb.from("specials").insert({title:t,items:it,color:$("sco").value});$("amsg").textContent=error?error.message.slice(0,60):"Special updated";loadExtra()};
  $("send2").onclick=async()=>{await sb.from("specials").update({active:false}).eq("active",true);$("amsg").textContent="Special ended";loadExtra()};
- $("adend").onclick=async()=>{await sb.from("ads").update({active:false}).eq("active",true);$("amsg").textContent="Ads ended";loadExtra()};
- $("adadd").onclick=async()=>{const t=$("adt").value.trim();if(!t)return;const d=+$("ade").value;const {error}=await sb.from("ads").insert({body:t,link:$("adu").value.trim()||null,expires_at:d>0?new Date(Date.now()+d*864e5).toISOString():null});$("amsg").textContent=error?error.message.slice(0,60):"Ad added";$("adt").value="";$("adu").value="";loadExtra()};
+ $("adend").onclick=async()=>{await sb.from("promos").update({active:false}).eq("active",true);$("amsg").textContent="Ads ended";loadExtra()};
+ $("adadd").onclick=async()=>{const t=$("adt").value.trim();if(!t)return;const d=+$("ade").value;const {error}=await sb.from("promos").insert({body:t,link:$("adu").value.trim()||null,expires_at:d>0?new Date(Date.now()+d*864e5).toISOString():null});$("amsg").textContent=error?error.message.slice(0,60):"Ad added";$("adt").value="";$("adu").value="";loadExtra()};
 }
 function onAdmin(){$("adb").hidden=!isAdmin;renderNews();loadReports()}
 /* buscador y silenciar */
@@ -504,9 +563,9 @@ function clocks(){
  Object.values(g).sort((a,b)=>a.o-b.o).forEach(x=>{const s=el("span");s.title=x.c.join(" ");s.append(el("b","",now.toLocaleTimeString("en-GB",{timeZone:x.tz,hour:"2-digit",minute:"2-digit"})),el("i","",x.c.join(" ")));f.appendChild(s)});
  $("clk").textContent=now.toLocaleString("en-GB")}
 setInterval(clocks,1000);clocks();
-showAd();renderNews();renderPins();renderM();load();loadQ();chatInit();adminInit();
+showAd();renderNews();renderPins();renderM();load();loadQ();loadAR();chatInit();adminInit();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
-setInterval(load,45000);setInterval(loadQ,60000);
+setInterval(load,45000);setInterval(loadQ,60000);setInterval(loadAR,300000);
 </script>
 </body>
 </html>
