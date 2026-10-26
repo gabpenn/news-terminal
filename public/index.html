@@ -198,7 +198,7 @@ function clearFirst(){if(first){$("msgs").innerHTML="";first=false}}
 function msgEl(u,tm,txt,at,re,id,canDel){
  const m=el("div","m"),h=el("div");h.append(el("span","u",u),el("span","tm",hm(tm)));
  const rb=el("button","rp","REPLY");rb.onclick=()=>{reply={u,txt:txt||(at?at.h:""),id};drawDraft();$("mi").focus()};h.appendChild(rb);
- if(canDel){const x=el("button","dl","DELETE");x.onclick=()=>sb.from("messages").delete().eq("id",id);h.appendChild(x)}
+ if(canDel){const x=el("button","dl","DELETE");x.onclick=async()=>{const {data,error}=await sb.from("messages").delete().eq("id",id).select();if(error||!data||!data.length){$("cs").textContent=error?error.message.slice(0,40):"NOT DELETED: NO PERMISSION";return}ROWS=ROWS.filter(r=>r.id!==id);redraw()};h.appendChild(x)}
  m.appendChild(h);
  if(re)m.appendChild(el("div","re",re.u+": "+re.txt.slice(0,70)));
  if(at){const a=el("div","at");a.appendChild(el("b","",at.s||""));if(at.link){const l=el("a","",at.h);l.href=at.link;l.target="_blank";l.rel="noopener noreferrer";a.appendChild(l)}else a.append(at.h);m.appendChild(a)}
