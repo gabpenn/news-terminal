@@ -75,6 +75,7 @@ const TOPICS = [
   ["Economy", /\b(econom|inflation|interest rate|central bank|market|stocks?|dollar|trade|tariff|gdp|bank|dólar|dolar|inflación|inflacion|bcra|bonos|fmi|mercado)\b/i],
   ["Politics", /\b(election|president|parliament|senate|congress|minister|government|vote|trump|milei|gobierno|congreso|elecciones|diputados)\b/i]
 ];
+const NOISE = /\b(?:celebrit(?:y|ies)|kardashian|jenner|taylor swift|beyonc[eé]|selena gomez|bad bunny|oscars?|grammys?|emmys?|golden globes?|box office|movie|film review|tv series|tv show|reality tv|love island|bachelor|dancing with the stars|trailer|singer|rapper|actor|actress|royal family|king charles|prince (?:william|harry)|princess (?:kate|diana)|meghan markle|duchess|wedding|engaged|dating|divorce|pregnan|baby bump|fashion|makeup|skincare|recipes?|diet|weight loss|workout|horoscope|zodiac|lottery|powerball|mega millions|jackpot|sportsbook|betting|parlay|best bets|prop bets|fantasy (?:football|baseball|basketball)|nfl|nba|mlb|nhl|ufc|wwe|premier league|champions league|world cup|touchdown|quarterback|playoffs|super bowl|halloween|thanksgiving|black friday|cyber monday|prime day|best deals?|deals? of the day|coupons?|gift guide|buying guide|hands-on|best (?:phones?|laptops?|headphones|tvs?|earbuds|vacuum|mattress)|travel guide|vacation|cruise|obituary|dies at|dead at \d+|net worth|viral|tiktok star|influencer|podcast|concert|tour dates|album|lyrics|crossword|wordle|quiz|red carpet|gift guide)\b/i;
 const SPORTY = /espn\.com|\/sports?[\/.]|football|soccer|\/nba|\/nfl|ole\.com\.ar|tycsports/i;
 const topicOf = (t) => { for (const [n, re] of TOPICS) if (re.test(t)) return n; return "World"; };
 
@@ -103,7 +104,7 @@ async function load(f) {
     const d = pick(b, "pubDate") || pick(b, "published") || pick(b, "updated") || pick(b, "dc:date");
     let t = new Date(d || now).getTime();
     if (t > now) t = now; // algunos medios publican horas adelantadas: nunca puede ser del futuro
-    return { t, title, link, source: f.name, region: f.region, topic: SPORTY.test(f.url) ? "Sports" : topicOf(title) };
+    return { t, title, link, source: f.name, region: f.region, topic: SPORTY.test(f.url) ? "Sports" : NOISE.test(title) ? "Entertainment" : topicOf(title) };
   }).filter((i) => i.title && i.link && !isNaN(i.t) && i.t > now - 86400000 && !/^clima hoy|pron[oó]stico del tiempo|hor[oó]scopo|\b(horoscope|recipes?|kardashian|coupons?|best deals|crossword|wordle|quiz|celebrity|red carpet|gift guide)\b/i.test(i.title));
 }
 
