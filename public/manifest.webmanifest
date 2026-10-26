@@ -1,6 +1,6 @@
 {
-  "name": "News Terminal",
-  "short_name": "News",
+  "name": "Zonda Wire",
+  "short_name": "Zonda",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
