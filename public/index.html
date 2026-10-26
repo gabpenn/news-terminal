@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>News Terminal</title>
+<title>Zonda Wire</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#000000">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -108,6 +108,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 .crawl.sp{display:none;background:#00101f}.crawl.sp.on{display:flex}.crawl.sp .lbl{background:#0a64c8}
 #spc{display:inline-block;white-space:nowrap;padding:2px 0 2px 100%;animation:cr 60s linear infinite}#spc b{color:var(--am);font-weight:400;margin:0 12px}
 .pbar{display:none;align-items:center;gap:8px;padding:3px 10px;border-bottom:1px solid var(--ln);font-size:15px}
+.pbar.promo{background:#101010;color:var(--dm);border-top:1px dashed #333}.pbar.promo small{background:#333;color:#ddd}.pbar.promo a{color:var(--am)}
 .pbar small{color:#000;background:rgba(255,255,255,.75);padding:0 5px;letter-spacing:1px;font-size:12px}.pbar a{color:inherit;text-decoration:none;font-weight:600}
 #rs{background:var(--hd);color:var(--dm);border:0;border-left:1px solid var(--ln);padding:0 12px;letter-spacing:1px;font-weight:600}#rs:hover{color:#000;background:var(--am)}
 #don{color:#000;background:var(--am);padding:0 7px;margin-right:8px;text-decoration:none;font-size:13px;letter-spacing:1px}
@@ -141,7 +142,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 </style>
 </head>
 <body>
-<div class="top"><span>NEWS TERMINAL</span><small id="st">CONNECTING</small><span><a id="don" hidden target="_blank" rel="noopener noreferrer">SUPPORT</a><span id="clk"></span></span></div>
+<div class="top"><span>ZONDA WIRE</span><small id="st">CONNECTING</small><span><a id="don" hidden target="_blank" rel="noopener noreferrer">SUPPORT</a><span id="clk"></span></span></div>
 <div class="cmd"><label for="cmd">CMD</label><input id="cmd" placeholder="TOP  ARG  ECONOMY  TECH  ENERGY  SPORTS  OIL  WL  PIN  CHAT  ALL" autocomplete="off"><span id="cm"></span><button id="rs">RESET</button></div>
 <div class="tape" id="tape"></div>
 <div class="crawl"><span class="lbl" id="clb">LATEST</span><div class="vp"><div id="crawl"></div></div></div>
@@ -151,7 +152,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 <nav id="tabs"><button data-p="pn" class="on">NEWS</button><button data-p="pp">PINNED</button><button data-p="pm">MARKETS</button><button data-p="pc">CHAT</button></nav>
 <main>
  <section class="p act" id="pn"><div class="ph"><span><em>1</em>TOP NEWS</span><small id="flt">Main: English, relevant</small></div><div class="sr"><input id="sq" placeholder="Search headlines (last 24h, all sources)" autocomplete="off" aria-label="Search headlines"><button id="mub">MUTE</button></div><div id="mup" hidden><p>Hide words (separated by commas)</p><input id="mw" placeholder="e.g. kardashian, horoscope" autocomplete="off"><p>Hide sources (separated by commas)</p><input id="ms" list="srcs" placeholder="e.g. Daily Mail" autocomplete="off"><datalist id="srcs"></datalist><button id="mdone">SAVE</button> <button id="mclr">CLEAR ALL</button></div><div class="pb" id="news"></div></section>
- <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>EVENT BOARD: results with bars (optional)</h4><div class="bhelp">Fill one row per party or candidate. Name and % are enough. Seats and photo link are optional. Then press UPDATE BOARD and it shows up in the pinned event and, if you type @board in the special strip, also there.</div><div class="bf"><input id="bdc" placeholder="% counted (e.g. 63)" inputmode="decimal"><input id="bds" placeholder="Source (e.g. Official committee, unofficial)" maxlength="80"></div><div id="bdr"></div><div class="bt"><button id="bdadd" class="x">+ ADD ROW</button></div><div class="bt"><button id="bdset">UPDATE BOARD</button><button id="bdload" class="x">LOAD CURRENT</button><button id="bdclr" class="x">CLEAR BOARD</button></div><div id="bdm" class="bhelp" style="color:var(--am);font-size:15px"></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%   (or type @board to copy the event board)" maxlength="600"><select id="sco"><option value="blue">Strip color: Blue</option><option value="red">Strip color: Red</option><option value="green">Strip color: Green</option><option value="amber">Strip color: Amber</option></select><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>COUNTDOWNS (rotating strip, you can add many)</h4><input id="cdt" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="60"><div class="bf"><input id="cdd" type="datetime-local"><select id="cdz"></select></div><div class="bhelp">Pick the date and time as it will be in the place where it happens, and choose that place. The strip shows that place's local time with its country code.</div><div class="bt"><button id="cdadd">ADD COUNTDOWN</button></div><div id="cdlist"></div><h4>REPORTED MESSAGES</h4><div id="rplist"></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
+ <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>EVENT BOARD: results with bars (optional)</h4><div class="bhelp">Fill one row per party or candidate. Name and % are enough. Seats and photo link are optional. Then press UPDATE BOARD and it shows up in the pinned event and, if you type @board in the special strip, also there.</div><div class="bf"><input id="bdc" placeholder="% counted (e.g. 63)" inputmode="decimal"><input id="bds" placeholder="Source (e.g. Official committee, unofficial)" maxlength="80"></div><div id="bdr"></div><div class="bt"><button id="bdadd" class="x">+ ADD ROW</button></div><div class="bt"><button id="bdset">UPDATE BOARD</button><button id="bdload" class="x">LOAD CURRENT</button><button id="bdclr" class="x">CLEAR BOARD</button></div><div id="bdm" class="bhelp" style="color:var(--am);font-size:15px"></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%   (or type @board to copy the event board)" maxlength="600"><select id="sco"><option value="blue">Strip color: Blue</option><option value="red">Strip color: Red</option><option value="green">Strip color: Green</option><option value="amber">Strip color: Amber</option></select><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>COUNTDOWNS (rotating strip, you can add many)</h4><input id="cdt" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="60"><div class="bf"><input id="cdd" type="datetime-local"><select id="cdz"></select></div><div class="bhelp">Pick the date and time as it will be in the place where it happens, and choose that place. The strip shows that place's local time and also each visitor's own local time.</div><div class="bt"><button id="cdadd">ADD COUNTDOWN</button></div><div id="cdlist"></div><h4>REPORTED MESSAGES</h4><div id="rplist"></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
  <div class="col">
   <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · not advice · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
    <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div class="pkh"><input id="pka" placeholder="Add any ticker: AAPL, TSLA, BINANCE:SOLUSDT" autocomplete="off" aria-label="Add ticker"><button id="pkb">ADD</button></div><div id="pkm" class="none"></div><div id="pkl"></div></div></section>
@@ -159,7 +160,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
  </div>
 </main>
 <div id="foot"></div>
-<div class="legal"><a href="/terms.html">TERMS</a><a href="/privacy.html">PRIVACY</a></div>
+<div class="legal"><a href="/terms.html">TERMS</a><a href="/privacy.html">PRIVACY</a><a id="advl" hidden>ADVERTISE</a></div>
 <script>
 /* ADMIN A MANO (hasta que exista el panel): edita estas dos lineas en GitHub */
 const EVENT={title:"",desc:"",keywords:[]};   // ejemplo: {title:"Iran-Israel",desc:"Live coverage",keywords:["iran","israel"]}
@@ -370,20 +371,22 @@ let CD=[];
 function loadCD(){if(!sb)return;sb.from("countdowns").select("*").order("target",{ascending:true}).limit(20).then(({data})=>{CD=data||[];tickCD();drawCDList()})}
 let cdKey="";
 const tzLabel=tz=>{if(!tz)return"your time";const z=Z.find(x=>x[1]===tz);return z?z[0]:tz.split("/").pop().replace(/_/g," ")};
-const fmtAt=(d,tz)=>{try{return d.toLocaleString("en-US",{timeZone:tz||undefined,weekday:"short",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false})}catch(e){return d.toLocaleString()}};
+const fmtAt=(d,tz)=>{try{const f={weekday:"short",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false};if(!tz)return d.toLocaleString("en-US",f)+" your time";
+ const place=d.toLocaleString("en-US",{...f,timeZone:tz})+" "+tzLabel(tz),sameDay=d.toLocaleDateString("en-US",{timeZone:tz})===d.toLocaleDateString("en-US"),
+ mine=d.toLocaleString("en-US",sameDay?{hour:"2-digit",minute:"2-digit",hour12:false}:f);return place+" \u00b7 "+mine+" your time"}catch(e){return d.toLocaleString()}};
 function tickCD(){
  const b=$("cdb"),c=$("cdc"),now=Date.now(),list=CD.filter(x=>new Date(x.target).getTime()>now-6*36e5).sort((a,z)=>new Date(a.target)-new Date(z.target));
  if(!list.length){b.classList.remove("on");c.innerHTML="";cdKey="";return}
  b.classList.add("on");
  const k=list.map(x=>x.id+"|"+x.target+"|"+x.tz+"|"+x.title).join(";");
  if(k!==cdKey){cdKey=k;c.innerHTML="";
-  list.forEach(x=>{const tg=new Date(x.target);c.appendChild(document.createTextNode(x.title));const v=el("b","v");v.dataset.t=tg.getTime();c.appendChild(v);c.appendChild(el("em","",fmtAt(tg,x.tz)+" "+tzLabel(x.tz)));c.appendChild(el("b","sep","//"))});
+  list.forEach(x=>{const tg=new Date(x.target);c.appendChild(document.createTextNode(x.title));const v=el("b","v");v.dataset.t=tg.getTime();c.appendChild(v);c.appendChild(el("em","",fmtAt(tg,x.tz)));c.appendChild(el("b","sep","//"))});
   c.style.animationDuration=Math.max(20,(list.length*420+c.parentElement.clientWidth)/crawlSpeed())+"s"}
  c.querySelectorAll("b.v").forEach(v=>{const ms=+v.dataset.t-now;if(ms<=0){v.textContent="LIVE NOW";v.classList.add("go");return}v.classList.remove("go");
   const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3),p=n=>String(n).padStart(2,"0");v.textContent=(d?d+"d ":"")+p(h)+":"+p(m)+":"+p(s)});
 }
 setInterval(tickCD,1000);
-function drawCDList(){const l=$("cdlist");if(!l)return;l.innerHTML="";CD.forEach(c=>{const r=el("div","al");r.appendChild(el("span","",c.title+" · "+fmtAt(new Date(c.target),c.tz)+" "+tzLabel(c.tz)));const b=el("button","x","DELETE");b.onclick=async()=>{await sb.from("countdowns").delete().eq("id",c.id);loadCD()};r.appendChild(b);l.appendChild(r)})}
+function drawCDList(){const l=$("cdlist");if(!l)return;l.innerHTML="";CD.forEach(c=>{const r=el("div","al");r.appendChild(el("span","",c.title+" · "+fmtAt(new Date(c.target),c.tz)));const b=el("button","x","DELETE");b.onclick=async()=>{await sb.from("countdowns").delete().eq("id",c.id);loadCD()};r.appendChild(b);l.appendChild(r)})}
 /* reportes (solo admin) */
 function loadReports(){
  if(!sb||!isAdmin)return;
@@ -417,7 +420,9 @@ function boardEl(b){
 function boardStrip(){const b=EV&&EV.board;if(!b||!b.rows||!b.rows.length)return"Waiting for results";const u=b.unit==null?"%":b.unit;const a=b.rows.slice(0,8).map(r=>r.n+" "+r.v+u+(r.s?" ("+r.s+")":""));if(b.counted)a.push("Counted "+b.counted+"%");return a.join(" | ")}
 /* extras: tira especial, anuncios, donacion, borrado a las 24 h */
 let SP=null,ADS=[],adi=0,crawlKey="",spKey="";
+const ADS_CONTACT="zondawire@proton.me";   // pone aca tu mail para anunciantes (ej: ads@tudominio.com). Si lo dejas vacio, el cartel aparece igual pero sin link
 const DONATE_URL="";   // pone aca tu link de donacion (Ko-fi, Buy Me a Coffee, PayPal...)
+if(ADS_CONTACT){const a=$("advl");a.href="mailto:"+ADS_CONTACT+"?subject="+encodeURIComponent("Advertising on "+location.host);a.hidden=false}
 if(DONATE_URL){const d=$("don");d.href=DONATE_URL;d.hidden=false}
 const crawlSpeed=()=>innerWidth<800?85:100;   // pixeles por segundo: subi el numero para que vaya mas rapido
 function speed(e){e.style.animationDuration=Math.max(8,(e.scrollWidth+e.parentElement.clientWidth)/crawlSpeed())+"s"}
@@ -432,7 +437,8 @@ function renderSpecial(){
 const COLS=["#ff9d00","#00c176","#5aa9ff","#ff6b9d"];
 function showAd(){
  const bar=$("pbar");
- if(!ADS.length){bar.style.display="none";return}
+ if(!ADS.length){bar.className="pbar promo";bar.style.display="flex";bar.style.background="";bar.style.color="";bar.querySelector("small").textContent="ADVERTISE";const l=$("pbl");l.textContent="Your message here: this strip is seen by every visitor"+(ADS_CONTACT?". Contact us.":".");if(ADS_CONTACT){l.href="mailto:"+ADS_CONTACT+"?subject="+encodeURIComponent("Advertising on "+location.host);l.removeAttribute("target")}else l.removeAttribute("href");return}
+ bar.className="pbar";bar.querySelector("small").textContent="SPONSORED";$("pbl").target="_blank";
  const a=ADS[adi%ADS.length];bar.style.display="flex";bar.style.background=COLS[adi%COLS.length];bar.style.color="#000";
  const l=$("pbl");l.textContent=a.body;if(a.link&&/^https?:\/\//i.test(a.link))l.href=a.link;else l.removeAttribute("href");
 }
@@ -498,7 +504,7 @@ function clocks(){
  Object.values(g).sort((a,b)=>a.o-b.o).forEach(x=>{const s=el("span");s.title=x.c.join(" ");s.append(el("b","",now.toLocaleTimeString("en-GB",{timeZone:x.tz,hour:"2-digit",minute:"2-digit"})),el("i","",x.c.join(" ")));f.appendChild(s)});
  $("clk").textContent=now.toLocaleString("en-GB")}
 setInterval(clocks,1000);clocks();
-renderNews();renderPins();renderM();load();loadQ();chatInit();adminInit();
+showAd();renderNews();renderPins();renderM();load();loadQ();chatInit();adminInit();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
 setInterval(load,45000);setInterval(loadQ,60000);
 </script>
