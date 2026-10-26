@@ -199,11 +199,18 @@ export default {
     const url = new URL(req.url);
     if (url.pathname === "/api/quotes") {
       const key = env.FINNHUB_KEY;
-      const syms = (url.searchParams.get("s") || "").split(",").filter((x) => /^[a-z0-9.^_:-]{1,20}$/i.test(x)).slice(0, 30);
+      const syms = (url.searchParams.get("s") || "").split(",").filter((x) => /^[a-z0-9.^=_:-]{1,20}$/i.test(x)).slice(0, 30);
       const q = {};
       if (key) {
         await Promise.all(syms.map(async (sym) => {
           try {
+            if (sym.toLowerCase().startsWith("yh:")) {
+              // futuros (oro, plata, petroleo) desde Yahoo
+              const yr = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/" + encodeURIComponent(sym.slice(3).toUpperCase()) + "?range=1d&interval=1d", { headers: { "User-Agent": "Mozilla/5.0 (compatible; ZondaWire/0.2)" }, cf: { cacheTtl: 30, cacheEverything: true }, signal: AbortSignal.timeout(6000) });
+              const m = ((await yr.json()).chart.result[0] || {}).meta || {};
+              if (m.regularMarketPrice > 0) q[sym.toLowerCase()] = { p: m.regularMarketPrice, o: m.chartPreviousClose || m.previousClose || m.regularMarketPrice };
+              return;
+            }
             const r = await fetch("https://finnhub.io/api/v1/quote?symbol=" + encodeURIComponent(sym.toUpperCase()) + "&token=" + key, { cf: { cacheTtl: 30, cacheEverything: true }, signal: AbortSignal.timeout(6000) });
             const d = await r.json();
             if (d && d.c > 0) q[sym.toLowerCase()] = { p: d.c, o: d.pc || d.o || d.c };
@@ -211,6 +218,38 @@ export default {
         }));
       }
       return Response.json({ q, updated: Date.now(), hasKey: !!key }, { headers: { "cache-control": "public, max-age=20" } });
+    }
+    if (url.pathname === "/api/chart") {
+      // Historial para los graficos: 1d, 5d, 1m, 1y (fuente: Yahoo Finance, sin clave)
+      const sym = (url.searchParams.get("s") || "").toUpperCase();
+      const R = { "1d": ["1d", "5m", 60], "5d": ["5d", "15m", 300], "1m": ["1mo", "1h", 900], "1y": ["1y", "1d", 3600] }[url.searchParams.get("r") || "1d"];
+      if (!/^[A-Z0-9.^=_-]{1,20}$/.test(sym) || !R) return new Response("bad request", { status: 400 });
+      try {
+        const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/" + encodeURIComponent(sym) + "?range=" + R[0] + "&interval=" + R[1], { headers: { "User-Agent": "Mozilla/5.0 (compatible; ZondaWire/0.2)" }, cf: { cacheTtl: R[2], cacheEverything: true }, signal: AbortSignal.timeout(8000) });
+        const c = (await r.json()).chart.result[0];
+        const ts = c.timestamp || [], cl = (c.indicators.quote[0] || {}).close || [];
+        let t = [], p = [];
+        for (let i = 0; i < ts.length; i++) if (cl[i] != null) { t.push(ts[i]); p.push(+cl[i].toFixed(4)); }
+        const step = Math.ceil(t.length / 240);
+        if (step > 1) { const t2 = [], p2 = []; for (let i = 0; i < t.length; i += step) { t2.push(t[i]); p2.push(p[i]); } if (t2[t2.length - 1] !== t[t.length - 1]) { t2.push(t[t.length - 1]); p2.push(p[p.length - 1]); } t = t2; p = p2; }
+        const m = c.meta || {};
+        return Response.json({ t, p, prev: m.chartPreviousClose || null, cc: m.currency || "", ex: m.exchangeName || "" }, { headers: { "cache-control": "public, max-age=" + R[2] } });
+      } catch (e) { return Response.json({ err: 1 }); }
+    }
+    if (url.pathname === "/api/ar") {
+      // Dolar y riesgo pais de Argentina (fuentes publicas gratuitas). Si una falla, simplemente no aparece.
+      const out = {};
+      try {
+        const r = await fetch("https://dolarapi.com/v1/dolares", { cf: { cacheTtl: 60, cacheEverything: true }, signal: AbortSignal.timeout(6000) });
+        const a = await r.json();
+        if (Array.isArray(a)) out.fx = a.filter((x) => ["oficial", "blue", "bolsa", "contadoconliqui"].includes(x.casa) && x.venta > 0).map((x) => ({ k: x.casa, b: x.compra, s: x.venta, t: x.fechaActualizacion }));
+      } catch (e) {}
+      try {
+        const r = await fetch("https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo", { cf: { cacheTtl: 300, cacheEverything: true }, signal: AbortSignal.timeout(6000) });
+        const d = await r.json();
+        if (d && d.valor > 0) out.risk = { v: d.valor, d: d.fecha };
+      } catch (e) {}
+      return Response.json(out, { headers: { "cache-control": "public, max-age=60" } });
     }
     if (url.pathname !== "/api/news") return new Response("Not found", { status: 404 });
     const list = pickFeeds();
