@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&display=swap">
+<style>
+body{margin:0;background:#000;color:#e8e8e8;font:18px/1.45 "Barlow Condensed","Arial Narrow",Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1{color:#ff9d00;letter-spacing:1px;font-weight:600;margin:.2em 0}h2{color:#ff9d00;font-size:20px;letter-spacing:1px;margin:1.6em 0 .2em;font-weight:600}
+a{color:#5aa9ff}.dm{color:#767676}p{margin:.5em 0}.back{display:inline-block;margin-bottom:12px}
+</style></head><body><main>
+<a class="back" href="/">&larr; Back to the terminal</a>
+<h1>Privacy Policy</h1>
+<p class="dm">Last updated: <span id="d"></span></p>
+<p class="dm">Draft template. Replace the values in SITE below (name, contact email, date) and have a lawyer review this text before you grow the service.</p>
+
+<h2>1. Who is responsible</h2>
+<p><span class="sn"></span> is operated by an individual based in Argentina. Contact for any privacy matter: <a class="se"></a>.</p>
+<h2>2. What we collect</h2>
+<p>If you only read the news, we do not ask for personal data. If you create an account we store your email address, a display name, and your password (stored in protected form by our authentication provider, never in readable form). If you use the chat, we store your messages with your display name and the time. If you edit your market watchlist while logged in, we store that list with your account. Preferences such as filters are saved in your own browser (local storage) and do not leave your device unless you are logged in and use the watchlist.</p>
+<p>Our hosting provider receives technical data needed to deliver the page, such as your IP address and browser type, and keeps ordinary security logs.</p>
+<h2>3. What we do not do</h2>
+<p>We do not sell your data. We do not use advertising cookies or track you across other sites. Sponsored strips are chosen by the operator and are not personalised. If this changes (for example if an ad network is added), we will update this policy and ask for consent where required.</p>
+<h2>4. How we use it</h2>
+<p>To run your account, show your chat messages to other users, keep your watchlist, keep the Service secure, prevent abuse and answer your requests.</p>
+<h2>5. Who processes data for us</h2>
+<p>We use Supabase (accounts, database and real-time chat), Cloudflare (hosting and delivery), and a market data provider (prices; it does not receive your personal data). These providers may process data on servers outside Argentina.</p>
+<h2>6. How long we keep it</h2>
+<p>Chat messages and news items are deleted automatically after about 24 hours (copies may persist briefly in backups). Account data is kept until you ask us to delete the account.</p>
+<h2>7. Your rights</h2>
+<p>You can ask to access, correct or delete your data, or to delete your account, by writing to <a class="se"></a>. In Argentina the data protection authority is the Agencia de Acceso a la Información Pública (Law 25.326). If you live in the European Union or United Kingdom you also have the rights described in the GDPR, including the right to complain to your local authority.</p>
+<h2>8. Children</h2>
+<p>The Service is not for people under 16 and we do not knowingly collect their data. If you think a child has created an account, tell us and we will delete it.</p>
+<h2>9. Security</h2>
+<p>We use reputable providers and access controls, but no system is completely secure. Do not share sensitive information in the chat, which is public.</p>
+<h2>10. Changes</h2>
+<p>We may update this policy and will change the date above when we do.</p>
+<p class="dm">See also our <a href="/terms.html">Terms of Use</a>.</p>
+
+<script>
+const SITE={name:"News Terminal",email:"CONTACT_EMAIL_HERE",updated:"2026-10-26"};
+document.getElementById("d").textContent=SITE.updated;
+document.querySelectorAll(".sn").forEach(e=>e.textContent=SITE.name);
+document.querySelectorAll(".se").forEach(e=>{e.textContent=SITE.email;e.href="mailto:"+SITE.email});
+</script></main></body></html>
