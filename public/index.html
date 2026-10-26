@@ -115,6 +115,8 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 .sub{display:none;padding:3px 10px 5px 146px;background:#080808;border-bottom:1px solid #101010;font-size:15px}.sub.on{display:block}
 .sub a{color:var(--tx);text-decoration:none}.sub a:hover{text-decoration:underline}.sub .t2{color:var(--dm);margin-right:8px}
 @media (max-width:799px){.sub{padding-left:58px}}
+.legal{display:flex;gap:14px;justify-content:center;padding:2px 0;background:var(--hd);font-size:12px;letter-spacing:1px;border-top:1px solid var(--ln)}.legal a{color:var(--dm);text-decoration:none}.legal a:hover{color:var(--am)}
+.tc{display:flex;gap:6px;align-items:flex-start;color:var(--dm);font-size:14px}.tc a{color:var(--bl)}
 </style>
 </head>
 <body>
@@ -129,12 +131,13 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
  <section class="p act" id="pn"><div class="ph"><span><em>1</em>TOP NEWS</span><small id="flt">Main: English, relevant</small></div><div class="pb" id="news"></div></section>
  <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%" maxlength="600"><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
  <div class="col">
-  <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
+  <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · not advice · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
    <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div class="pkh"><input id="pka" placeholder="Add any ticker: AAPL, TSLA, BINANCE:SOLUSDT" autocomplete="off" aria-label="Add ticker"><button id="pkb">ADD</button></div><div id="pkm" class="none"></div><div id="pkl"></div></div></section>
-  <section class="p" id="pc"><div id="au" hidden><p id="am">Log in or create an account to write in the chat.</p><input id="ae" type="email" placeholder="Email" autocomplete="email"><input id="ap" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password"><input id="an" placeholder="Display name (for sign up)" maxlength="24"><div class="bt"><button id="al">LOG IN</button><button id="as">SIGN UP</button><button id="ax" class="x">CANCEL</button></div></div><div class="ph"><span><em>4</em>CHAT</span><span><small id="cs">local preview</small> <button id="cb" class="hb" hidden></button></span></div><div class="pb" id="msgs"><div class="none">Shared chat arrives with user accounts. For now messages stay on your device.</div></div><div id="draft"></div><div class="in"><input id="mi" placeholder="Message" autocomplete="off" aria-label="Message"><button id="send">SEND</button></div></section>
+  <section class="p" id="pc"><div id="au" hidden><p id="am">Log in or create an account to write in the chat.</p><input id="ae" type="email" placeholder="Email" autocomplete="email"><input id="ap" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password"><input id="an" placeholder="Display name (for sign up)" maxlength="24"><label class="tc"><input type="checkbox" id="atc"><span>To sign up: I am 16 or older and accept the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label><div class="bt"><button id="al">LOG IN</button><button id="as">SIGN UP</button><button id="ax" class="x">CANCEL</button></div></div><div class="ph"><span><em>4</em>CHAT</span><span><small id="cs">local preview</small> <button id="cb" class="hb" hidden></button></span></div><div class="pb" id="msgs"><div class="none">Shared chat arrives with user accounts. For now messages stay on your device.</div></div><div id="draft"></div><div class="in"><input id="mi" placeholder="Message" autocomplete="off" aria-label="Message"><button id="send">SEND</button></div></section>
  </div>
 </main>
 <div id="foot"></div>
+<div class="legal"><a href="/terms.html">TERMS</a><a href="/privacy.html">PRIVACY</a></div>
 <script>
 /* ADMIN A MANO (hasta que exista el panel): edita estas dos lineas en GitHub */
 const EVENT={title:"",desc:"",keywords:[]};   // ejemplo: {title:"Iran-Israel",desc:"Live coverage",keywords:["iran","israel"]}
@@ -177,7 +180,8 @@ function renderPins(){
  const ck=list.join("|");if(ck!==crawlKey){crawlKey=ck;c.innerHTML="";list.forEach(t=>{c.append(t,el("b","","//"))});speed(c)}
 }
 let lastC="",rt=null;
-const mapRow=(r,fresh)=>({t:new Date(r.published_at),h:r.title,s:r.source,c:r.topic,g:r.region,link:r.link,fresh,cr:r.created_at});
+const SPORT_SRC=new Set(["ESPN","Olé","TyC Sports"]);
+const mapRow=(r,fresh)=>({t:new Date(Math.min(new Date(r.published_at),new Date(r.created_at||Date.now()))),h:r.title,s:r.source,c:SPORT_SRC.has(r.source)?"Sports":r.topic,g:r.region,link:r.link,fresh,cr:r.created_at});
 const cols="link,title,source,region,topic,published_at,created_at";
 function afterNews(){loaded=true;$("st").textContent="UPDATED "+new Date().toTimeString().slice(0,8);renderNews();renderPins();items.forEach(i=>i.fresh=false)}
 function addRows(rows,fresh){
@@ -200,7 +204,7 @@ async function load(){
 function loadApi(){
  fetch("/api/news").then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
   const first=seen===null;if(first)seen={};
-  items=d.items.map(i=>{const k=i.link,f=!first&&!seen[k];seen[k]=1;return{t:new Date(i.t),h:i.title,s:i.source,c:i.topic,g:i.region,link:i.link,fresh:f}});
+  items=d.items.map(i=>{const k=i.link,f=!first&&!seen[k];seen[k]=1;return{t:new Date(Math.min(i.t,Date.now())),h:i.title,s:i.source,c:SPORT_SRC.has(i.source)?"Sports":i.topic,g:i.region,link:i.link,fresh:f}});
   loaded=true;$("st").textContent="UPDATED "+new Date(d.updated).toTimeString().slice(0,8);
   renderNews();renderPins();items.forEach(i=>i.fresh=false);
  }).catch(()=>{$("st").textContent="NEWS OFFLINE";loaded=true;if(!items.length){const b=$("news");b.innerHTML="";b.appendChild(el("div","none","Could not load headlines. Open /api/news?debug=1 to see which sources fail."))}});
@@ -296,7 +300,7 @@ function chatInit(){
  $("cb").onclick=()=>{if(me)sb.auth.signOut();else $("au").hidden=false};
  $("ax").onclick=()=>{$("au").hidden=true};
  $("al").onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$("ae").value.trim(),password:$("ap").value});if(error)$("am").textContent=error.message;else $("au").hidden=true};
- $("as").onclick=async()=>{const e=$("ae").value.trim(),n=$("an").value.trim()||e.split("@")[0];const {data,error}=await sb.auth.signUp({email:e,password:$("ap").value,options:{data:{username:n}}});
+ $("as").onclick=async()=>{if(!$("atc").checked){$("am").textContent="To sign up, tick the box accepting the Terms and Privacy Policy.";return}const e=$("ae").value.trim(),n=$("an").value.trim()||e.split("@")[0];const {data,error}=await sb.auth.signUp({email:e,password:$("ap").value,options:{data:{username:n}}});
   if(error)$("am").textContent=error.message;else if(!data.session)$("am").textContent="Check your email to confirm the account, then log in.";else $("au").hidden=true};
  sb.auth.getSession().then(({data})=>setMe(data.session&&data.session.user));
  sb.auth.onAuthStateChange((_e,s)=>setMe(s&&s.user));
