@@ -2,8 +2,8 @@
 // Para sacar una fuente que no funciona, borra su linea. Para agregar, copia una.
 const F = [];
 const add = (n, r, ...u) => u.forEach((x) => F.push({ name: n, region: r, url: x }));
-// Cantidad maxima de feeds que se leen. Con el plan gratis de Cloudflare bajalo a 20.
-const LIMIT = 20;
+// Cantidad maxima de feeds que se leen. Plan gratis: 12. Con el plan pago de 5 USD/mes podes subir a 140.
+const LIMIT = 12;
 
 add("BBC", "G", ...["world","business","technology","politics","science_and_environment","world/asia","world/africa","world/latin_america","world/middle_east","world/europe","world/us_and_canada"].map((p) => `https://feeds.bbci.co.uk/news/${p}/rss.xml`), "https://feeds.bbci.co.uk/sport/rss.xml", "https://feeds.bbci.co.uk/sport/football/rss.xml");
 add("NYT", "G", ...["World","Business","Technology","Politics","Sports","Science","Americas","Europe","MiddleEast","AsiaPacific"].map((p) => `https://rss.nytimes.com/services/xml/rss/nyt/${p}.xml`));
@@ -120,8 +120,28 @@ async function pool(list, fn, n) {
 export default {
   async fetch(req) {
     const url = new URL(req.url);
+    if (url.pathname === "/api/quotes") {
+      const syms = (url.searchParams.get("s") || "").split(",").filter((s) => /^[a-z0-9.^_-]{1,12}$/i.test(s)).slice(0, 40);
+      const q = {};
+      try {
+        const r = await fetch("https://stooq.com/q/l/?s=" + syms.join("+") + "&f=sd2t2ohlcv&h&e=csv", { cf: { cacheTtl: 60, cacheEverything: true }, signal: AbortSignal.timeout(8000) });
+        (await r.text()).split("\n").slice(1).forEach((ln) => {
+          const c = ln.trim().split(",");
+          const p = parseFloat(c[6]), o = parseFloat(c[3]);
+          if (c[0] && !isNaN(p) && !isNaN(o)) q[c[0].toLowerCase()] = { p, o };
+        });
+      } catch (e) {}
+      return Response.json({ q, updated: Date.now() }, { headers: { "cache-control": "public, max-age=30" } });
+    }
     if (url.pathname !== "/api/news") return new Response("Not found", { status: 404 });
-    const list = F.slice(0, LIMIT);
+    // Un feed por medio primero (variedad), con 3 medios argentinos adelante.
+    const by = {};
+    F.forEach((f) => (by[f.name] = by[f.name] || []).push(f));
+    let order = [];
+    for (let i = 0, any = true; any; i++) { any = false; for (const k in by) if (by[k][i]) { order.push(by[k][i]); any = true; } }
+    const TOP = ["Infobae", "Clarín", "Ámbito"];
+    order = [...order.filter((f) => TOP.includes(f.name)), ...order.filter((f) => !TOP.includes(f.name))];
+    const list = order.slice(0, LIMIT);
     const out = await pool(list, load, 6);
     // Para ver que fuentes andan: abri /api/news?debug=1
     if (url.searchParams.has("debug")) {
