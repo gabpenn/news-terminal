@@ -103,7 +103,7 @@ async function load(f) {
     let t = new Date(d || now).getTime();
     if (t > now + 3600000) t = now;
     return { t, title, link, source: f.name, region: f.region, topic: topicOf(title) };
-  }).filter((i) => i.title && i.link && !isNaN(i.t));
+  }).filter((i) => i.title && i.link && !isNaN(i.t) && !/^clima hoy|pron[oó]stico del tiempo|hor[oó]scopo/i.test(i.title));
 }
 
 async function pool(list, fn, n) {
@@ -118,20 +118,22 @@ async function pool(list, fn, n) {
 }
 
 export default {
-  async fetch(req) {
+  async fetch(req, env) {
     const url = new URL(req.url);
     if (url.pathname === "/api/quotes") {
-      const syms = (url.searchParams.get("s") || "").split(",").filter((s) => /^[a-z0-9.^_-]{1,12}$/i.test(s)).slice(0, 40);
+      const key = env.FINNHUB_KEY;
+      const syms = (url.searchParams.get("s") || "").split(",").filter((x) => /^[a-z0-9.^_:-]{1,20}$/i.test(x)).slice(0, 30);
       const q = {};
-      try {
-        const r = await fetch("https://stooq.com/q/l/?s=" + syms.join("+") + "&f=sd2t2ohlcv&h&e=csv", { cf: { cacheTtl: 60, cacheEverything: true }, signal: AbortSignal.timeout(8000) });
-        (await r.text()).split("\n").slice(1).forEach((ln) => {
-          const c = ln.trim().split(",");
-          const p = parseFloat(c[6]), o = parseFloat(c[3]);
-          if (c[0] && !isNaN(p) && !isNaN(o)) q[c[0].toLowerCase()] = { p, o };
-        });
-      } catch (e) {}
-      return Response.json({ q, updated: Date.now() }, { headers: { "cache-control": "public, max-age=30" } });
+      if (key) {
+        await Promise.all(syms.map(async (sym) => {
+          try {
+            const r = await fetch("https://finnhub.io/api/v1/quote?symbol=" + encodeURIComponent(sym.toUpperCase()) + "&token=" + key, { cf: { cacheTtl: 30, cacheEverything: true }, signal: AbortSignal.timeout(6000) });
+            const d = await r.json();
+            if (d && d.c > 0) q[sym.toLowerCase()] = { p: d.c, o: d.pc || d.o || d.c };
+          } catch (e) {}
+        }));
+      }
+      return Response.json({ q, updated: Date.now(), hasKey: !!key }, { headers: { "cache-control": "public, max-age=20" } });
     }
     if (url.pathname !== "/api/news") return new Response("Not found", { status: 404 });
     // Un feed por medio primero (variedad), con 3 medios argentinos adelante.
