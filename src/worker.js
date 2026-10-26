@@ -121,21 +121,29 @@ async function pool(list, fn, n) {
 const SB = "https://qfdliwiohllkujbjonoz.supabase.co";
 
 // Un feed por medio primero (variedad), con 3 medios argentinos adelante.
-function pickFeeds() {
+function orderedFeeds() {
   const by = {};
   F.forEach((f) => (by[f.name] = by[f.name] || []).push(f));
   let order = [];
   for (let i = 0, any = true; any; i++) { any = false; for (const k in by) if (by[k][i]) { order.push(by[k][i]); any = true; } }
   const TOP = ["Infobae", "Clarín", "Ámbito"];
   order = [...order.filter((f) => TOP.includes(f.name)), ...order.filter((f) => !TOP.includes(f.name))];
-  return order.slice(0, LIMIT);
+  return order;
 }
+function pickFeeds() { return orderedFeeds().slice(0, LIMIT); }
 
 // Recolector: corre solo cada minuto, lee los medios y guarda las noticias en Supabase.
-async function collect(env) {
+// Rotacion: en cada vuelta (1 por minuto) lee solo PER_RUN medios y la vuelta siguiente lee los proximos.
+// Asi, con el plan gratis, se recorren TODOS los medios cada pocos minutos y las noticias van entrando de a tandas.
+// Con el plan pago podes subir PER_RUN a 40 o mas.
+const PER_RUN = 12;
+async function collect(env, when) {
   const key = env.SUPABASE_SECRET_KEY;
   if (!key) return;
-  const out = await pool(pickFeeds(), load, 6);
+  const all = orderedFeeds();
+  const n = Math.max(1, Math.ceil(all.length / PER_RUN));
+  const k = Math.floor((when || Date.now()) / 60000) % n;
+  const out = await pool(all.slice(k * PER_RUN, (k + 1) * PER_RUN), load, 6);
   const seen = new Set();
   const rows = out.flatMap((r) => (Array.isArray(r) ? r : []))
     .filter((i) => !seen.has(i.link) && seen.add(i.link))
@@ -149,7 +157,7 @@ async function collect(env) {
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(collect(env));
+    ctx.waitUntil(collect(env, event.scheduledTime));
   },
   async fetch(req, env) {
     const url = new URL(req.url);
