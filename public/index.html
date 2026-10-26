@@ -93,6 +93,11 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 #au input{background:#000;color:var(--tx);border:1px solid var(--ln);padding:8px}#au .bt{display:flex;gap:6px}
 #au button{padding:6px 12px;border:0;font-weight:600;letter-spacing:1px;background:var(--am);color:#000}#au button.x{background:var(--hd);color:var(--dm)}#au p{margin:0;color:var(--dm);font-size:14px}
 .m .dl{background:none;border:0;color:var(--dn);font-size:13px;margin-left:8px;padding:0}.at a{color:inherit;text-decoration:none}.at a:hover{text-decoration:underline}
+#ad{position:absolute;inset:0;background:var(--bg);z-index:3;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px}#ad[hidden]{display:none}
+#ad input,#ad select{background:#000;color:var(--tx);border:1px solid var(--ln);padding:6px;font:inherit}
+#ad button{padding:5px 10px;border:0;font-weight:600;letter-spacing:1px;background:var(--am);color:#000}#ad button.x{background:var(--hd);color:var(--dm)}
+#ad h4{margin:8px 0 0;color:var(--am);letter-spacing:1px;font-size:14px}#ad .al{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--ln);padding:3px 0}#ad .bt{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:799px){.row>span:last-child{grid-column:3;grid-row:1/3}}
 </style>
 </head>
 <body>
@@ -103,7 +108,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 <nav id="tabs"><button data-p="pn" class="on">NEWS</button><button data-p="pp">PINNED</button><button data-p="pm">MARKETS</button><button data-p="pc">CHAT</button></nav>
 <main>
  <section class="p act" id="pn"><div class="ph"><span><em>1</em>TOP NEWS</span><small id="flt">All sources</small></div><div class="pb" id="news"></div></section>
- <section class="p pin" id="pp"><div class="ph"><span><em>2</em>PINNED EVENT</span><span class="live" id="lv"></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
+ <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
  <div class="col">
   <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
    <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div id="pkl"></div></div></section>
@@ -126,18 +131,18 @@ function renderNews(){
   const r=el("div","row"+(i.fresh?" n":""));
   const h=el("a","h",i.h);h.href=i.link;h.target="_blank";h.rel="noopener noreferrer";
   const a=el("button","a","TO CHAT");a.onclick=()=>{draft=i;drawDraft();show("pc");$("mi").focus()};
-  r.append(el("span","t",hm(i.t)),el("span","s",i.s),h,a);b.appendChild(r)});
+  const ac=el("span");ac.appendChild(a);if(isAdmin){const ab=el("button","a","ALERT");ab.style.marginLeft="4px";ab.onclick=()=>addAlert(i.h,i.link,6);ac.appendChild(ab)}r.append(el("span","t",hm(i.t)),el("span","s",i.s),h,ac);b.appendChild(r)});
  if(!l.length)b.appendChild(el("div","none",loaded?"No headlines for this command.":"Loading headlines..."));
 }
 function renderPins(){
  const pe=$("pe"),u=$("ups"),c=$("crawl");pe.innerHTML="";u.innerHTML="";c.innerHTML="";
- if(EVENT.title){
-  pe.append(el("h3","",EVENT.title),el("p","",EVENT.desc||""));$("lv").textContent="LIVE";$("lv").style.color="var(--dn)";
-  items.filter(i=>EVENT.keywords.some(k=>i.h.toLowerCase().includes(k.toLowerCase()))).slice(0,20).forEach(i=>{
+ const ev=EV||(EVENT.title?EVENT:null);if(ev){
+  pe.append(el("h3","",ev.title),el("p","",ev.desc||""));$("lv").textContent="LIVE";$("lv").style.color="var(--dn)";
+  items.filter(i=>ev.keywords.some(k=>i.h.toLowerCase().includes(k.toLowerCase()))).slice(0,20).forEach(i=>{
    const d=el("div","u1");d.append(el("span","t",hm(i.t)));const a=el("a","h",i.h+" ("+i.s+")");a.href=i.link;a.target="_blank";a.rel="noopener noreferrer";d.appendChild(a);u.appendChild(d)});
  }else{pe.appendChild(el("div","none","No pinned event right now."));$("lv").textContent=""}
- const list=ALERTS.length?ALERTS:items.slice(0,8).map(i=>i.h);
- $("clb").textContent=ALERTS.length?"ALERT":"LATEST";
+ const al=liveAL().map(a=>a.body);const AA=al.length?al:ALERTS;const list=AA.length?AA:items.slice(0,8).map(i=>i.h);
+ $("clb").textContent=AA.length?"ALERT":"LATEST";
  list.forEach(t=>{c.append(t,el("b","","//"))});
 }
 function load(){
@@ -221,8 +226,8 @@ $("send").onclick=send;$("mi").onkeydown=e=>{if(e.key==="Enter")send()};
 function setMe(u){
  me=u||null;const cb=$("cb");cb.hidden=false;cb.textContent=me?"LOG OUT":"SIGN IN";
  $("cs").textContent=me?((me.user_metadata&&me.user_metadata.username)||"")+(isAdmin?" (admin)":""):"";
- if(me)sb.from("admins").select("user_id").eq("user_id",me.id).then(({data})=>{const a=!!(data&&data.length);if(a!==isAdmin){isAdmin=a;redraw();setMe(me)}});
- else if(isAdmin){isAdmin=false;redraw()}
+ if(me)sb.from("admins").select("user_id").eq("user_id",me.id).then(({data})=>{const a=!!(data&&data.length);if(a!==isAdmin){isAdmin=a;redraw();onAdmin();setMe(me)}});
+ else if(isAdmin){isAdmin=false;redraw();onAdmin()}
 }
 function chatInit(){
  if(!sb)return;
@@ -237,6 +242,36 @@ function chatInit(){
  sb.channel("chat").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},p=>{if(ROWS.some(r=>r.id===p.new.id))return;ROWS.push(p.new);if(ROWS.length>200)ROWS.shift();first=false;$("msgs").appendChild(rowEl(p.new));$("msgs").scrollTop=1e9})
   .on("postgres_changes",{event:"DELETE",schema:"public",table:"messages"},p=>{ROWS=ROWS.filter(r=>r.id!==p.old.id);redraw()}).subscribe();
 }
+/* admin: eventos y alertas */
+let EV=null,AL=[];
+const liveAL=()=>AL.filter(a=>!a.expires_at||new Date(a.expires_at)>new Date());
+function loadAdminData(){
+ if(!sb)return;
+ sb.from("events").select("*").eq("active",true).order("id",{ascending:false}).limit(1).then(({data})=>{EV=data&&data[0]?{title:data[0].title,desc:data[0].descr||"",keywords:data[0].keywords||[]}:null;renderPins()});
+ sb.from("alerts").select("*").order("id",{ascending:false}).limit(20).then(({data})=>{AL=data||[];renderPins();drawAlerts()});
+}
+function drawAlerts(){
+ const l=$("alist");l.innerHTML="";
+ liveAL().forEach(a=>{const r=el("div","al");r.appendChild(el("span","",a.body));const b=el("button","x","DELETE");b.onclick=async()=>{await sb.from("alerts").delete().eq("id",a.id);loadAdminData()};r.appendChild(b);l.appendChild(r)});
+}
+async function addAlert(body,link,hours){
+ const row={body:body.slice(0,200),link:link||null,expires_at:hours>0?new Date(Date.now()+hours*3600000).toISOString():null};
+ const {error}=await sb.from("alerts").insert(row);$("amsg").textContent=error?error.message.slice(0,60):"Alert added";loadAdminData();
+}
+function adminInit(){
+ if(!sb)return;
+ $("adb").onclick=()=>{$("ad").hidden=false;drawAlerts()};$("aclose").onclick=()=>{$("ad").hidden=true};
+ $("eset").onclick=async()=>{const t=$("et").value.trim();if(!t)return;
+  await sb.from("events").update({active:false}).eq("active",true);
+  const {error}=await sb.from("events").insert({title:t,descr:$("ed").value.trim(),keywords:$("ek").value.split(",").map(x=>x.trim()).filter(Boolean),active:true});
+  $("amsg").textContent=error?error.message.slice(0,60):"Event pinned";loadAdminData()};
+ $("eend").onclick=async()=>{await sb.from("events").update({active:false}).eq("active",true);$("amsg").textContent="Event ended";loadAdminData()};
+ $("aadd").onclick=()=>{const v=$("alt").value.trim();if(!v)return;addAlert(v,null,+$("aexp").value);$("alt").value=""};
+ loadAdminData();
+ sb.channel("adm").on("postgres_changes",{event:"*",schema:"public",table:"events"},loadAdminData).on("postgres_changes",{event:"*",schema:"public",table:"alerts"},loadAdminData).subscribe();
+ setInterval(renderPins,60000);
+}
+function onAdmin(){$("adb").hidden=!isAdmin;renderNews()}
 /* ui */
 function show(id){document.querySelectorAll(".p").forEach(p=>p.classList.toggle("act",p.id===id));document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.p===id))}
 document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>show(b.dataset.p));
@@ -251,7 +286,7 @@ $("cmd").onkeydown=function(e){
 const Z=[["MEX","America/Mexico_City"],["USA","America/New_York"],["CAN","America/Toronto"],["BRA","America/Sao_Paulo"],["ARG","America/Argentina/Buenos_Aires"],["GBR","Europe/London"],["ESP","Europe/Madrid"],["FRA","Europe/Paris"],["DEU","Europe/Berlin"],["ITA","Europe/Rome"],["ZAF","Africa/Johannesburg"],["TUR","Europe/Istanbul"],["SAU","Asia/Riyadh"],["RUS","Europe/Moscow"],["IND","Asia/Kolkata"],["IDN","Asia/Jakarta"],["CHN","Asia/Shanghai"],["KOR","Asia/Seoul"],["JPN","Asia/Tokyo"],["AUS","Australia/Sydney"]];
 function clocks(){const f=$("foot");f.innerHTML="";Z.forEach(z=>{const s=el("span");s.append(el("b","",z[0]),new Date().toLocaleTimeString("en-GB",{timeZone:z[1],hour:"2-digit",minute:"2-digit"}));f.appendChild(s)});$("clk").textContent=new Date().toLocaleString("en-GB")}
 setInterval(clocks,1000);clocks();
-renderNews();renderPins();renderM();load();loadQ();chatInit();
+renderNews();renderPins();renderM();load();loadQ();chatInit();adminInit();
 setInterval(load,45000);setInterval(loadQ,60000);
 </script>
 </body>
