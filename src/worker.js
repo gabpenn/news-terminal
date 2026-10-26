@@ -134,6 +134,40 @@ function orderedFeeds() {
 function pickFeeds() { return orderedFeeds().slice(0, LIMIT); }
 
 // Recolector: corre solo cada minuto, lee los medios y guarda las noticias en Supabase.
+// Tablero automatico (opcional): si definis la variable BOARD_CSV_URL en Cloudflare, cada minuto se lee ese CSV
+// (por ejemplo una hoja de Google publicada como CSV) y se copia al evento fijado activo.
+// Formato: una fila por linea: nombre,valor,bancas,imagen   y filas de datos extra: _counted,63   _source,Fuente   _unit,%
+function csvLine(l) {
+  const o = []; let c = "", q = false;
+  for (const ch of l) { if (ch === '"') q = !q; else if (ch === "," && !q) { o.push(c); c = ""; } else c += ch; }
+  o.push(c); return o.map((x) => x.trim());
+}
+function parseBoard(t) {
+  const b = { rows: [] };
+  t.split(/\r?\n/).forEach((l) => {
+    if (!l.trim()) return;
+    const c = csvLine(l), n = c[0] || "";
+    if (n.startsWith("_")) { b[n.slice(1).toLowerCase()] = (c[1] || "").slice(0, 80); return; }
+    const v = parseFloat(c[1]);
+    if (!n || isNaN(v) || b.rows.length >= 12) return;
+    b.rows.push({ n: n.slice(0, 40), v, s: (c[2] || "").slice(0, 10), i: /^https:\/\//i.test(c[3] || "") ? c[3] : "" });
+  });
+  return b;
+}
+async function updateBoard(env, key) {
+  const r = await fetch(env.BOARD_CSV_URL, { cf: { cacheTtl: 30, cacheEverything: true }, signal: AbortSignal.timeout(8000) });
+  if (!r.ok) return;
+  const b = parseBoard(await r.text());
+  if (!b.rows.length) return;
+  const cur = await (await fetch(SB + "/rest/v1/events?select=board&active=eq.true&limit=1", { headers: { apikey: key } })).json();
+  if (!Array.isArray(cur) || !cur.length) return;
+  const old = cur[0].board || {};
+  const same = JSON.stringify([old.rows, old.counted, old.source, old.unit]) === JSON.stringify([b.rows, b.counted, b.source, b.unit]);
+  if (same) return;
+  b.updated = new Date().toISOString();
+  await fetch(SB + "/rest/v1/events?active=eq.true", { method: "PATCH", headers: { apikey: key, "content-type": "application/json", prefer: "return=minimal" }, body: JSON.stringify({ board: b }) });
+}
+
 // Rotacion: en cada vuelta (1 por minuto) lee solo PER_RUN medios y la vuelta siguiente lee los proximos.
 // Asi, con el plan gratis, se recorren TODOS los medios cada pocos minutos y las noticias van entrando de a tandas.
 // Con el plan pago podes subir PER_RUN a 40 o mas.
@@ -154,6 +188,7 @@ async function collect(env, when) {
     await fetch(SB + "/rest/v1/news?on_conflict=link", { method: "POST", headers: h, body: JSON.stringify(rows.slice(k, k + 300)) });
   }
   await fetch(SB + "/rest/v1/news?published_at=lt." + encodeURIComponent(new Date(Date.now() - 86400000).toISOString()), { method: "DELETE", headers: { apikey: key } });
+  if (env.BOARD_CSV_URL) { try { await updateBoard(env, key); } catch (e) {} }
 }
 
 export default {
