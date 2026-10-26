@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>News Terminal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&display=swap">
@@ -87,6 +88,11 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
  .row .s{grid-column:2;grid-row:2;font-size:14px}.row .h{grid-column:2;grid-row:1}.row .a{grid-column:3;grid-row:1/3}.row .t{grid-row:1/3}
  .top small{display:none}
 }
+.hb{background:none;border:1px solid var(--am-ln);color:var(--am);font-size:12px;padding:0 6px;letter-spacing:1px}
+#au{position:absolute;inset:0;background:var(--bg);z-index:3;display:flex;flex-direction:column;gap:8px;padding:12px}#au[hidden]{display:none}
+#au input{background:#000;color:var(--tx);border:1px solid var(--ln);padding:8px}#au .bt{display:flex;gap:6px}
+#au button{padding:6px 12px;border:0;font-weight:600;letter-spacing:1px;background:var(--am);color:#000}#au button.x{background:var(--hd);color:var(--dm)}#au p{margin:0;color:var(--dm);font-size:14px}
+.m .dl{background:none;border:0;color:var(--dn);font-size:13px;margin-left:8px;padding:0}.at a{color:inherit;text-decoration:none}.at a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -101,7 +107,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
  <div class="col">
   <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
    <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div id="pkl"></div></div></section>
-  <section class="p" id="pc"><div class="ph"><span><em>4</em>CHAT</span><small>local preview</small></div><div class="pb" id="msgs"><div class="none">Shared chat arrives with user accounts. For now messages stay on your device.</div></div><div id="draft"></div><div class="in"><input id="mi" placeholder="Message" autocomplete="off" aria-label="Message"><button id="send">SEND</button></div></section>
+  <section class="p" id="pc"><div id="au" hidden><p id="am">Log in or create an account to write in the chat.</p><input id="ae" type="email" placeholder="Email" autocomplete="email"><input id="ap" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password"><input id="an" placeholder="Display name (for sign up)" maxlength="24"><div class="bt"><button id="al">LOG IN</button><button id="as">SIGN UP</button><button id="ax" class="x">CANCEL</button></div></div><div class="ph"><span><em>4</em>CHAT</span><span><small id="cs">local preview</small> <button id="cb" class="hb" hidden></button></span></div><div class="pb" id="msgs"><div class="none">Shared chat arrives with user accounts. For now messages stay on your device.</div></div><div id="draft"></div><div class="in"><input id="mi" placeholder="Message" autocomplete="off" aria-label="Message"><button id="send">SEND</button></div></section>
  </div>
 </main>
 <div id="foot"></div>
@@ -177,7 +183,10 @@ function drawPk(){
 }
 function openPk(){show("pm");$("pk").hidden=false;$("pks").value="";drawPk()}
 $("pks").oninput=drawPk;$("pkd").onclick=()=>{$("pk").hidden=true};
-/* chat (solo local por ahora) */
+/* chat */
+const SB_URL="https://qfdliwiohllkujbjonoz.supabase.co/rest/v1/",SB_KEY="sb_publishable_Xbq7_4dEDqPlxMh1DkXJlQ_nQjUSUxa";
+const sb=(window.supabase&&SB_URL.startsWith("http"))?window.supabase.createClient(SB_URL,SB_KEY):null;
+let me=null,isAdmin=false,first=true,ROWS=[];
 function drawDraft(){
  const d=$("draft");d.innerHTML="";
  const line=(x,fn)=>{const r=el("div");r.appendChild(el("span","",x));const b=el("button","","CANCEL");b.onclick=fn;r.appendChild(b);d.appendChild(r)};
@@ -185,18 +194,49 @@ function drawDraft(){
  if(draft)line("Attached: "+draft.h.slice(0,60),()=>{draft=null;drawDraft()});
  d.style.display=reply||draft?"block":"none";
 }
-let first=true;
-function addMsg(u,txt,at,re){
- if(first){$("msgs").innerHTML="";first=false}
- const m=el("div","m"),h=el("div");h.append(el("span","u",u),el("span","tm",hm(new Date())));
- const rb=el("button","rp","REPLY");rb.onclick=()=>{reply={u,txt:txt||(at?at.h:"")};drawDraft();$("mi").focus()};h.appendChild(rb);m.appendChild(h);
+function clearFirst(){if(first){$("msgs").innerHTML="";first=false}}
+function msgEl(u,tm,txt,at,re,id,canDel){
+ const m=el("div","m"),h=el("div");h.append(el("span","u",u),el("span","tm",hm(tm)));
+ const rb=el("button","rp","REPLY");rb.onclick=()=>{reply={u,txt:txt||(at?at.h:""),id};drawDraft();$("mi").focus()};h.appendChild(rb);
+ if(canDel){const x=el("button","dl","DELETE");x.onclick=()=>sb.from("messages").delete().eq("id",id);h.appendChild(x)}
+ m.appendChild(h);
  if(re)m.appendChild(el("div","re",re.u+": "+re.txt.slice(0,70)));
- if(at){const a=el("div","at");a.append(el("b","",at.s),at.h);m.appendChild(a)}
- if(txt)m.appendChild(el("p","",txt));
- $("msgs").appendChild(m);$("msgs").scrollTop=1e9;
+ if(at){const a=el("div","at");a.appendChild(el("b","",at.s||""));if(at.link){const l=el("a","",at.h);l.href=at.link;l.target="_blank";l.rel="noopener noreferrer";a.appendChild(l)}else a.append(at.h);m.appendChild(a)}
+ if(txt&&!(at&&txt===at.h.slice(0,500)))m.appendChild(el("p","",txt));
+ return m;
 }
-function send(){const i=$("mi"),v=i.value.trim();if(!v&&!draft)return;addMsg("you",v,draft,reply);i.value="";draft=null;reply=null;drawDraft()}
+function addMsg(u,txt,at,re){clearFirst();$("msgs").appendChild(msgEl(u,new Date(),txt,at,re,null,false));$("msgs").scrollTop=1e9}
+function rowEl(r){return msgEl(r.username,new Date(r.created_at),r.body,r.at_title?{s:r.at_source,h:r.at_title,link:r.at_link}:null,r.re_user?{u:r.re_user,txt:r.re_text||""}:null,r.id,isAdmin)}
+function redraw(){const b=$("msgs");b.innerHTML="";ROWS.forEach(r=>b.appendChild(rowEl(r)));b.scrollTop=1e9}
+async function send(){
+ const i=$("mi"),v=i.value.trim();if(!v&&!draft)return;
+ if(!sb){addMsg("you",v,draft,reply);i.value="";draft=null;reply=null;drawDraft();return}
+ if(!me){$("au").hidden=false;return}
+ const row={body:v||draft.h.slice(0,500),re_id:reply?reply.id:null,re_user:reply?reply.u:null,re_text:reply?reply.txt.slice(0,120):null,at_title:draft?draft.h:null,at_source:draft?draft.s:null,at_link:draft?draft.link:null};
+ const {error}=await sb.from("messages").insert(row);
+ if(error){$("cs").textContent=error.message.includes("slow")?"SLOW DOWN":error.message.includes("blocked")?"BLOCKED":"ERROR";return}
+ $("cs").textContent="";i.value="";draft=null;reply=null;drawDraft();
+}
 $("send").onclick=send;$("mi").onkeydown=e=>{if(e.key==="Enter")send()};
+function setMe(u){
+ me=u||null;const cb=$("cb");cb.hidden=false;cb.textContent=me?"LOG OUT":"SIGN IN";
+ $("cs").textContent=me?((me.user_metadata&&me.user_metadata.username)||"")+(isAdmin?" (admin)":""):"";
+ if(me)sb.from("admins").select("user_id").eq("user_id",me.id).then(({data})=>{const a=!!(data&&data.length);if(a!==isAdmin){isAdmin=a;redraw();setMe(me)}});
+ else if(isAdmin){isAdmin=false;redraw()}
+}
+function chatInit(){
+ if(!sb)return;
+ $("cb").onclick=()=>{if(me)sb.auth.signOut();else $("au").hidden=false};
+ $("ax").onclick=()=>{$("au").hidden=true};
+ $("al").onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$("ae").value.trim(),password:$("ap").value});if(error)$("am").textContent=error.message;else $("au").hidden=true};
+ $("as").onclick=async()=>{const e=$("ae").value.trim(),n=$("an").value.trim()||e.split("@")[0];const {data,error}=await sb.auth.signUp({email:e,password:$("ap").value,options:{data:{username:n}}});
+  if(error)$("am").textContent=error.message;else if(!data.session)$("am").textContent="Check your email to confirm the account, then log in.";else $("au").hidden=true};
+ sb.auth.getSession().then(({data})=>setMe(data.session&&data.session.user));
+ sb.auth.onAuthStateChange((_e,s)=>setMe(s&&s.user));
+ sb.from("messages").select("*").order("id",{ascending:false}).limit(100).then(({data})=>{ROWS=(data||[]).reverse();first=false;redraw()});
+ sb.channel("chat").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},p=>{if(ROWS.some(r=>r.id===p.new.id))return;ROWS.push(p.new);if(ROWS.length>200)ROWS.shift();first=false;$("msgs").appendChild(rowEl(p.new));$("msgs").scrollTop=1e9})
+  .on("postgres_changes",{event:"DELETE",schema:"public",table:"messages"},p=>{ROWS=ROWS.filter(r=>r.id!==p.old.id);redraw()}).subscribe();
+}
 /* ui */
 function show(id){document.querySelectorAll(".p").forEach(p=>p.classList.toggle("act",p.id===id));document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.p===id))}
 document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>show(b.dataset.p));
@@ -211,7 +251,7 @@ $("cmd").onkeydown=function(e){
 const Z=[["MEX","America/Mexico_City"],["USA","America/New_York"],["CAN","America/Toronto"],["BRA","America/Sao_Paulo"],["ARG","America/Argentina/Buenos_Aires"],["GBR","Europe/London"],["ESP","Europe/Madrid"],["FRA","Europe/Paris"],["DEU","Europe/Berlin"],["ITA","Europe/Rome"],["ZAF","Africa/Johannesburg"],["TUR","Europe/Istanbul"],["SAU","Asia/Riyadh"],["RUS","Europe/Moscow"],["IND","Asia/Kolkata"],["IDN","Asia/Jakarta"],["CHN","Asia/Shanghai"],["KOR","Asia/Seoul"],["JPN","Asia/Tokyo"],["AUS","Australia/Sydney"]];
 function clocks(){const f=$("foot");f.innerHTML="";Z.forEach(z=>{const s=el("span");s.append(el("b","",z[0]),new Date().toLocaleTimeString("en-GB",{timeZone:z[1],hour:"2-digit",minute:"2-digit"}));f.appendChild(s)});$("clk").textContent=new Date().toLocaleString("en-GB")}
 setInterval(clocks,1000);clocks();
-renderNews();renderPins();renderM();load();loadQ();
+renderNews();renderPins();renderM();load();loadQ();chatInit();
 setInterval(load,45000);setInterval(loadQ,60000);
 </script>
 </body>
