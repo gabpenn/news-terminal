@@ -117,6 +117,10 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 @media (max-width:799px){.sub{padding-left:58px}}
 .legal{display:flex;gap:14px;justify-content:center;padding:2px 0;background:var(--hd);font-size:12px;letter-spacing:1px;border-top:1px solid var(--ln)}.legal a{color:var(--dm);text-decoration:none}.legal a:hover{color:var(--am)}
 .tc{display:flex;gap:6px;align-items:flex-start;color:var(--dm);font-size:14px}.tc a{color:var(--bl)}
+.vf{display:inline-block;background:var(--bl);color:#000;border-radius:50%;width:15px;height:15px;line-height:15px;text-align:center;font-size:11px;margin-left:5px;font-weight:700;vertical-align:1px}
+.crawl.sp[data-c=red]{background:#1a0505}.crawl.sp[data-c=red] .lbl{background:#c4281f}
+.crawl.sp[data-c=green]{background:#00150c}.crawl.sp[data-c=green] .lbl{background:#0a7a45}
+.crawl.sp[data-c=amber]{background:#1a1000}.crawl.sp[data-c=amber] .lbl{background:#b36b00}
 </style>
 </head>
 <body>
@@ -129,7 +133,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 <nav id="tabs"><button data-p="pn" class="on">NEWS</button><button data-p="pp">PINNED</button><button data-p="pm">MARKETS</button><button data-p="pc">CHAT</button></nav>
 <main>
  <section class="p act" id="pn"><div class="ph"><span><em>1</em>TOP NEWS</span><small id="flt">Main: English, relevant</small></div><div class="pb" id="news"></div></section>
- <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%" maxlength="600"><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
+ <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%" maxlength="600"><select id="sco"><option value="blue">Strip color: Blue</option><option value="red">Strip color: Red</option><option value="green">Strip color: Green</option><option value="amber">Strip color: Amber</option></select><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
  <div class="col">
   <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · not advice · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
    <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div class="pkh"><input id="pka" placeholder="Add any ticker: AAPL, TSLA, BINANCE:SOLUSDT" autocomplete="off" aria-label="Add ticker"><button id="pkb">ADD</button></div><div id="pkm" class="none"></div><div id="pkl"></div></div></section>
@@ -265,10 +269,10 @@ function drawDraft(){
  d.style.display=reply||draft?"block":"none";
 }
 function clearFirst(){if(first){$("msgs").innerHTML="";first=false}}
-function msgEl(u,tm,txt,at,re,id,canDel){
- const m=el("div","m"),h=el("div");h.append(el("span","u",u),el("span","tm",hm(tm)));
+function msgEl(u,tm,txt,at,re,id,canDel,adm,uid){
+ const m=el("div","m"),h=el("div");h.append(el("span","u",u));if(adm){const v=el("span","vf","\u2713");v.title="Verified admin";h.appendChild(v)}h.appendChild(el("span","tm",hm(tm)));
  const rb=el("button","rp","REPLY");rb.onclick=()=>{reply={u,txt:txt||(at?at.h:""),id};drawDraft();$("mi").focus()};h.appendChild(rb);
- if(canDel){const x=el("button","dl","DELETE");x.onclick=async()=>{const {data,error}=await sb.from("messages").delete().eq("id",id).select();if(error||!data||!data.length){$("cs").textContent=error?error.message.slice(0,40):"NOT DELETED: NO PERMISSION";return}ROWS=ROWS.filter(r=>r.id!==id);redraw()};h.appendChild(x)}
+ if(canDel){const x=el("button","dl","DELETE");x.onclick=async()=>{const {data,error}=await sb.from("messages").delete().eq("id",id).select();if(error||!data||!data.length){$("cs").textContent=error?error.message.slice(0,40):"NOT DELETED: NO PERMISSION";return}ROWS=ROWS.filter(r=>r.id!==id);redraw()};h.appendChild(x);if(uid){const bk=el("button","dl","BLOCK");bk.onclick=async()=>{if(!confirm("Block this user from writing in the chat?"))return;const {error}=await sb.from("blocked").upsert({user_id:uid});$("cs").textContent=error?error.message.slice(0,40):"USER BLOCKED"};h.appendChild(bk)}}
  m.appendChild(h);
  if(re)m.appendChild(el("div","re",re.u+": "+re.txt.slice(0,70)));
  if(at){const a=el("div","at");a.appendChild(el("b","",at.s||""));if(at.link){const l=el("a","",at.h);l.href=at.link;l.target="_blank";l.rel="noopener noreferrer";a.appendChild(l)}else a.append(at.h);m.appendChild(a)}
@@ -276,7 +280,7 @@ function msgEl(u,tm,txt,at,re,id,canDel){
  return m;
 }
 function addMsg(u,txt,at,re){clearFirst();$("msgs").appendChild(msgEl(u,new Date(),txt,at,re,null,false));$("msgs").scrollTop=1e9}
-function rowEl(r){return msgEl(r.username,new Date(r.created_at),r.body,r.at_title?{s:r.at_source,h:r.at_title,link:r.at_link}:null,r.re_user?{u:r.re_user,txt:r.re_text||""}:null,r.id,isAdmin)}
+function rowEl(r){return msgEl(r.username,new Date(r.created_at),r.body,r.at_title?{s:r.at_source,h:r.at_title,link:r.at_link}:null,r.re_user?{u:r.re_user,txt:r.re_text||""}:null,r.id,isAdmin,r.is_admin,r.user_id)}
 function redraw(){const b=$("msgs");b.innerHTML="";ROWS.forEach(r=>b.appendChild(rowEl(r)));b.scrollTop=1e9}
 async function send(){
  const i=$("mi"),v=i.value.trim();if(!v&&!draft)return;
@@ -346,7 +350,7 @@ function speed(e){e.style.animationDuration=Math.max(8,(e.scrollWidth+e.parentEl
 function renderSpecial(){
  const s=$("sp");
  if(!SP){s.classList.remove("on");spKey="";return}
- s.classList.add("on");$("spl").textContent=SP.title;
+ s.classList.add("on");s.dataset.c=SP.color||"blue";$("spl").textContent=SP.title;
  const k=SP.id+"|"+SP.items;if(k===spKey)return;spKey=k;
  const c=$("spc");c.innerHTML="";
  SP.items.split("|").map(x=>x.trim()).filter(Boolean).forEach(x=>c.append(x,el("b","","//")));speed(c);
@@ -369,7 +373,7 @@ function drawAds(){
 setInterval(()=>{if(ADS.length){adi=(adi+1)%ADS.length;showAd()}},8000);
 setInterval(()=>{const c=Date.now()-864e5,n=ROWS.length;ROWS=ROWS.filter(r=>new Date(r.created_at)>c);if(ROWS.length!==n)redraw();renderNews()},60000);
 function extraInit(){
- $("sset").onclick=async()=>{const t=$("sti").value.trim(),it=$("sit").value.trim();if(!t||!it)return;await sb.from("specials").update({active:false}).eq("active",true);const {error}=await sb.from("specials").insert({title:t,items:it});$("amsg").textContent=error?error.message.slice(0,60):"Special updated";loadExtra()};
+ $("sset").onclick=async()=>{const t=$("sti").value.trim(),it=$("sit").value.trim();if(!t||!it)return;await sb.from("specials").update({active:false}).eq("active",true);const {error}=await sb.from("specials").insert({title:t,items:it,color:$("sco").value});$("amsg").textContent=error?error.message.slice(0,60):"Special updated";loadExtra()};
  $("send2").onclick=async()=>{await sb.from("specials").update({active:false}).eq("active",true);$("amsg").textContent="Special ended";loadExtra()};
  $("adend").onclick=async()=>{await sb.from("ads").update({active:false}).eq("active",true);$("amsg").textContent="Ads ended";loadExtra()};
  $("adadd").onclick=async()=>{const t=$("adt").value.trim();if(!t)return;const d=+$("ade").value;const {error}=await sb.from("ads").insert({body:t,link:$("adu").value.trim()||null,expires_at:d>0?new Date(Date.now()+d*864e5).toISOString():null});$("amsg").textContent=error?error.message.slice(0,60):"Ad added";$("adt").value="";$("adu").value="";loadExtra()};
