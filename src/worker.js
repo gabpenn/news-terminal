@@ -75,6 +75,7 @@ const TOPICS = [
   ["Economy", /\b(econom|inflation|interest rate|central bank|market|stocks?|dollar|trade|tariff|gdp|bank|dólar|dolar|inflación|inflacion|bcra|bonos|fmi|mercado)\b/i],
   ["Politics", /\b(election|president|parliament|senate|congress|minister|government|vote|trump|milei|gobierno|congreso|elecciones|diputados)\b/i]
 ];
+const SPORTY = /espn\.com|\/sports?[\/.]|football|soccer|\/nba|\/nfl|ole\.com\.ar|tycsports/i;
 const topicOf = (t) => { for (const [n, re] of TOPICS) if (re.test(t)) return n; return "World"; };
 
 function pick(block, tag) {
@@ -101,8 +102,8 @@ async function load(f) {
     if (!link) { const m = b.match(/<link[^>]*href="([^"]+)"/i); link = m ? m[1] : ""; }
     const d = pick(b, "pubDate") || pick(b, "published") || pick(b, "updated") || pick(b, "dc:date");
     let t = new Date(d || now).getTime();
-    if (t > now + 3600000) t = now;
-    return { t, title, link, source: f.name, region: f.region, topic: topicOf(title) };
+    if (t > now) t = now; // algunos medios publican horas adelantadas: nunca puede ser del futuro
+    return { t, title, link, source: f.name, region: f.region, topic: SPORTY.test(f.url) ? "Sports" : topicOf(title) };
   }).filter((i) => i.title && i.link && !isNaN(i.t) && i.t > now - 86400000 && !/^clima hoy|pron[oó]stico del tiempo|hor[oó]scopo|\b(horoscope|recipes?|kardashian|coupons?|best deals|crossword|wordle|quiz|celebrity|red carpet|gift guide)\b/i.test(i.title));
 }
 
