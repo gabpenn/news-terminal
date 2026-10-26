@@ -88,7 +88,7 @@ function pick(block, tag) {
 
 async function load(f) {
   const res = await fetch(f.url, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; NewsTerminal/0.2)" },
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; ZondaWire/0.2)" },
     signal: AbortSignal.timeout(8000),
     cf: { cacheTtl: 60, cacheEverything: true }
   });
