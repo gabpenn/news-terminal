@@ -111,7 +111,7 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
  <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span><em>2</em>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
  <div class="col">
   <section class="p" id="pm"><div class="ph"><span><em>3</em>MARKETS</span><small>delayed · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
-   <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div id="pkl"></div></div></section>
+   <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div class="pkh"><input id="pka" placeholder="Add any ticker: AAPL, TSLA, BINANCE:SOLUSDT" autocomplete="off" aria-label="Add ticker"><button id="pkb">ADD</button></div><div id="pkm" class="none"></div><div id="pkl"></div></div></section>
   <section class="p" id="pc"><div id="au" hidden><p id="am">Log in or create an account to write in the chat.</p><input id="ae" type="email" placeholder="Email" autocomplete="email"><input id="ap" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password"><input id="an" placeholder="Display name (for sign up)" maxlength="24"><div class="bt"><button id="al">LOG IN</button><button id="as">SIGN UP</button><button id="ax" class="x">CANCEL</button></div></div><div class="ph"><span><em>4</em>CHAT</span><span><small id="cs">local preview</small> <button id="cb" class="hb" hidden></button></span></div><div class="pb" id="msgs"><div class="none">Shared chat arrives with user accounts. For now messages stay on your device.</div></div><div id="draft"></div><div class="in"><input id="mi" placeholder="Message" autocomplete="off" aria-label="Message"><button id="send">SEND</button></div></section>
  </div>
 </main>
@@ -154,25 +154,25 @@ function load(){
  }).catch(()=>{$("st").textContent="NEWS OFFLINE";loaded=true;if(!items.length){const b=$("news");b.innerHTML="";b.appendChild(el("div","none","Could not load headlines. Open /api/news?debug=1 to see which sources fail."))}});
 }
 /* markets */
-const IDX=[["SPX","S&P 500","^spx"],["DJI","Dow Jones","^dji"],["NDX","Nasdaq","^ndq"],["WTI","WTI crude","cl.f"],["BRENT","Brent","cb.f"],["GOLD","Gold","gc.f"],["EURUSD","EUR/USD","eurusd"],["USDARS","USD/ARS","usdars"],["BTC","Bitcoin","btcusd"]];
+const IDX=[["SPY","S&P 500 ETF","SPY"],["DIA","Dow ETF","DIA"],["QQQ","Nasdaq ETF","QQQ"],["USO","Oil ETF","USO"],["GLD","Gold ETF","GLD"],["BTC","Bitcoin","BINANCE:BTCUSDT"],["ETH","Ethereum","BINANCE:ETHUSDT"]];
 const CO=[["Technology",[["AAPL","Apple"],["MSFT","Microsoft"],["NVDA","Nvidia"],["GOOGL","Alphabet"],["AMZN","Amazon"],["META","Meta"],["TSLA","Tesla"],["AMD","AMD"],["TSM","TSMC"]]],["Argentina",[["YPF","YPF"],["MELI","MercadoLibre"],["GGAL","Grupo Galicia"],["BMA","Banco Macro"],["PAM","Pampa Energía"],["VIST","Vista Energy"],["TEO","Telecom Argentina"]]],["Energy",[["XOM","Exxon Mobil"],["CVX","Chevron"],["SHEL","Shell"],["PBR","Petrobras"]]],["Finance",[["JPM","JPMorgan"],["GS","Goldman Sachs"],["BAC","Bank of America"]]],["Consumer",[["KO","Coca-Cola"],["MCD","McDonalds"],["WMT","Walmart"],["DIS","Disney"],["NFLX","Netflix"]]],["Other",[["VALE","Vale"],["BABA","Alibaba"],["ITUB","Itaú Unibanco"]]]];
 const NAME={};CO.forEach(g=>g[1].forEach(c=>NAME[c[0]]=c[1]));
 let watch=["AAPL","NVDA","YPF","MELI","XOM"],Q={};
-try{const w=JSON.parse(localStorage.getItem("nt-watch")||"null");if(Array.isArray(w))watch=w.filter(s=>NAME[s])}catch(e){}
-const saveW=()=>{try{localStorage.setItem("nt-watch",JSON.stringify(watch))}catch(e){}};
+try{const w=JSON.parse(localStorage.getItem("nt-watch")||"null");if(Array.isArray(w))watch=w.filter(s=>typeof s==="string"&&/^[A-Z0-9.^_:-]{1,20}$/.test(s))}catch(e){}
+const saveW=()=>{try{localStorage.setItem("nt-watch",JSON.stringify(watch))}catch(e){}if(typeof sb!=="undefined"&&sb&&typeof me!=="undefined"&&me)sb.from("watchlists").upsert({user_id:me.id,symbols:watch})};
 const px=p=>p>=1000?p.toFixed(0):p>=10?p.toFixed(2):p.toFixed(4);
-const key=s=>s+".us";
+const key=s=>s;
 function qrow(code,name,k){const q=Q[k],r=el("div","q"),a=el("span","",code);a.appendChild(el("small","",name));
  if(!q){r.append(a,el("span","","—"),el("span","dm",""));return r}
  const c=(q.p/q.o-1)*100;r.append(a,el("span","",px(q.p)),el("span",c>=0?"up":"dn",(c>=0?"+":"")+c.toFixed(2)+"%"));return r}
 function renderM(){
  const b=$("mk"),t=$("tape");b.innerHTML="";t.innerHTML="";
  b.appendChild(el("div","sec")).appendChild(el("span","","INDICES · FX · COMMODITIES"));
- IDX.forEach(x=>b.appendChild(qrow(x[0],x[1],x[2])));
+ IDX.forEach(x=>b.appendChild(qrow(x[0],x[1],x[2].toLowerCase())));
  const sc=el("div","sec");sc.appendChild(el("span","","WATCHLIST"));const eb=el("button","","EDIT");eb.onclick=openPk;sc.appendChild(eb);b.appendChild(sc);
  if(!watch.length)b.appendChild(el("div","none","Empty. Press EDIT to choose companies."));
  watch.forEach(s=>b.appendChild(qrow(s,NAME[s],key(s.toLowerCase()))));
- IDX.map(x=>[x[0],x[2]]).concat(watch.map(s=>[s,key(s.toLowerCase())])).forEach(a=>{const q=Q[a[1]];if(!q)return;const c=(q.p/q.o-1)*100,e=el("span");e.append(el("em","",a[0]),el("b",c>=0?"up":"dn",px(q.p)+" "+(c>=0?"+":"")+c.toFixed(2)+"%"));e.lastChild.style.fontWeight=400;t.appendChild(e)});
+ IDX.map(x=>[x[0],x[2].toLowerCase()]).concat(watch.map(s=>[s,key(s.toLowerCase())])).forEach(a=>{const q=Q[a[1]];if(!q)return;const c=(q.p/q.o-1)*100,e=el("span");e.append(el("em","",a[0]),el("b",c>=0?"up":"dn",px(q.p)+" "+(c>=0?"+":"")+c.toFixed(2)+"%"));e.lastChild.style.fontWeight=400;t.appendChild(e)});
 }
 function loadQ(){
  const ks=IDX.map(x=>x[2]).concat(watch.map(s=>key(s.toLowerCase())));
@@ -180,13 +180,15 @@ function loadQ(){
 }
 function drawPk(){
  const q=$("pks").value.trim().toLowerCase(),l=$("pkl");l.innerHTML="";
- CO.forEach(g=>{const m=g[1].filter(c=>!q||(c[0]+" "+c[1]).toLowerCase().includes(q));if(!m.length)return;
+ (watch.some(s=>!NAME[s])?[["Custom",watch.filter(s=>!NAME[s]).map(s=>[s,""])]].concat(CO):CO).forEach(g=>{const m=g[1].filter(c=>!q||(c[0]+" "+c[1]).toLowerCase().includes(q));if(!m.length)return;
   l.appendChild(el("div","sec")).appendChild(el("span","",g[0].toUpperCase()));
   m.forEach(c=>{const r=el("label","ck"),cb=document.createElement("input");cb.type="checkbox";cb.checked=watch.includes(c[0]);
    cb.onchange=()=>{watch=cb.checked?watch.concat(c[0]):watch.filter(x=>x!==c[0]);saveW();renderM();loadQ()};
    r.append(cb,el("b","",c[0]),el("span","",c[1]));l.appendChild(r)})})
 }
 function openPk(){show("pm");$("pk").hidden=false;$("pks").value="";drawPk()}
+$("pkb").onclick=()=>{const t=$("pka").value.trim().toUpperCase();if(!/^[A-Z0-9.^_:-]{1,20}$/.test(t))return;$("pkm").textContent="Checking...";
+ fetch("/api/quotes?s="+encodeURIComponent(t)).then(r=>r.json()).then(d=>{const k=t.toLowerCase();if(d.q&&d.q[k]){if(!watch.includes(t))watch.push(t);Q[k]=d.q[k];saveW();renderM();drawPk();$("pka").value="";$("pkm").textContent=t+" added"}else $("pkm").textContent=d.hasKey===false?"Market data key missing on server":"Ticker not found"}).catch(()=>{$("pkm").textContent="Error"})};
 $("pks").oninput=drawPk;$("pkd").onclick=()=>{$("pk").hidden=true};
 /* chat */
 const SB_URL="https://qfdliwiohllkujbjonoz.supabase.co",SB_KEY="sb_publishable_Xbq7_4dEDqPlxMh1DkXJlQ_nQjUSUxa";
@@ -226,6 +228,7 @@ $("send").onclick=send;$("mi").onkeydown=e=>{if(e.key==="Enter")send()};
 function setMe(u){
  me=u||null;const cb=$("cb");cb.hidden=false;cb.textContent=me?"LOG OUT":"SIGN IN";
  $("cs").textContent=me?((me.user_metadata&&me.user_metadata.username)||"")+(isAdmin?" (admin)":""):"";
+ if(me)sb.from("watchlists").select("symbols").eq("user_id",me.id).then(({data})=>{if(data&&data[0]&&data[0].symbols){watch=data[0].symbols;renderM();loadQ()}});
  if(me)sb.from("admins").select("user_id").eq("user_id",me.id).then(({data})=>{const a=!!(data&&data.length);if(a!==isAdmin){isAdmin=a;redraw();onAdmin();setMe(me)}});
  else if(isAdmin){isAdmin=false;redraw();onAdmin()}
 }
