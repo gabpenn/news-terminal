@@ -170,6 +170,11 @@ function parseBoard(t) {
   return b;
 }
 function decodeFeed(buf) {
+  const u = new Uint8Array(buf);
+  if (u.length > 1 && ((u[0] === 0xff && u[1] === 0xfe) || (u[0] === 0xfe && u[1] === 0xff))) {
+    return new TextDecoder(u[0] === 0xff ? "utf-16le" : "utf-16be").decode(buf).replace(/^\uFEFF/, "");
+  }
+  if (u.length > 3 && u[1] === 0 && u[3] === 0) return new TextDecoder("utf-16le").decode(buf);
   let t = new TextDecoder("utf-8").decode(buf);
   if (t.includes("�") || !/[֐-׿]/.test(t)) {
     try { const t2 = new TextDecoder("windows-1255").decode(buf); if (/[֐-׿]/.test(t2)) t = t2; } catch (e) {}
@@ -240,26 +245,101 @@ function parseCec(text, names) {
   if (rest > 0) top.push({ n: "Others (" + (nParties - 10) + " lists)", v: Math.round((rest / valid) * 1000) / 10, s: "", i: "" });
   return { board: { rows: top, votes: valid, unit: "%", source: "Central Elections Committee, unofficial relay", note: "Seats are a projection (3.25% threshold), not official." }, msg: "official file: " + nParties + " lists, " + valid.toLocaleString("en-US") + " valid votes, " + rowsN + " places" };
 }
+
+// Lector de tablas de paginas web: busca la tabla con mas filas "nombre + porcentaje (o votos)".
+function parseHtml(text, host) {
+  if (!/<tr[\s>]/i.test(text)) return null;
+  const t = text.slice(0, 250000);
+  const clean = (x) => x.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<sup[\s\S]*?<\/sup>/gi, " ").replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;|&#160;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;|&#34;/g, '"').replace(/&#39;|&apos;/g, "'")
+    .replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/\[\d+\]/g, "").replace(/\s+/g, " ").trim();
+  const num = (x) => {
+    x = (x || "").replace(/[−–]/g, "-").trim();
+    if (/^\d{1,3}([.,\s]\d{3})+$/.test(x)) return parseFloat(x.replace(/[.,\s]/g, ""));
+    const m = x.match(/^-?\d+(?:[.,]\d+)?/); return m ? parseFloat(m[0].replace(",", ".")) : NaN;
+  };
+  const BAD = /^(total|turnout|valid|invalid|blank|registered|electorate|votes|source|others?)\b/i;
+  let best = null;
+  const tables = t.split(/<table[\s>]/i).slice(1);
+  for (const tb of tables) {
+    const trs = tb.match(/<tr[\s\S]*?<\/tr>/gi) || [];
+    if (trs.length < 3) continue;
+    const grid = trs.map((r) => (r.match(/<t[dh][\s\S]*?<\/t[dh]>/gi) || []).map(clean));
+    let nameI = -1, pctI = -1, seatI = -1, votesI = -1, start = 0;
+    for (let h = 0; h < Math.min(4, grid.length); h++) {
+      const g = grid[h];
+      if (g.some((x) => /\d/.test(x) && !isNaN(num(x)))) continue;   // una fila con numeros es dato, no encabezado
+      const a = g.findIndex((x) => /party|candidate|list|name|partido|candidato|lista|team|equipo/i.test(x));
+      const b = g.findIndex((x) => /%|percent|share|porcentaje/i.test(x));
+      const c = g.findIndex((x) => /seats?|mandates?|bancas|esca[ñn]os/i.test(x));
+      const d = g.findIndex((x) => /^votes?$|votos/i.test(x));
+      if (a >= 0 || b >= 0 || c >= 0 || d >= 0) { nameI = a; pctI = b; seatI = c; votesI = d; start = h + 1; break; }
+    }
+    const rows = [];
+    for (let i = start; i < grid.length; i++) {
+      const c = grid[i];
+      if (c.length < 2) continue;
+      let n = nameI >= 0 ? c[nameI] : "";
+      if (!n) n = c.find((x) => x && /[A-Za-z֐-׿À-ɏ]{2}/.test(x) && isNaN(num(x)) && !/%/.test(x)) || "";
+      if (!n || BAD.test(n)) continue;
+      let p = NaN;
+      if (pctI >= 0) p = num(c[pctI]);
+      if (isNaN(p)) { const pc = c.find((x) => /^\d{1,3}(?:[.,]\d+)?\s?%$/.test(x)); if (pc) p = num(pc); }
+      let vt = NaN;
+      if (isNaN(p)) { if (votesI >= 0) vt = num(c[votesI]); if (isNaN(vt)) vt = Math.max(0, ...c.filter((x) => x !== n).map((x) => { const v = num(x); return /^\d{1,3}([.,\s]\d{3})+$/.test(x) ? v : NaN; }).filter((v) => !isNaN(v))) || NaN; }
+      if (isNaN(p) && !(vt > 0)) continue;
+      const se = seatI >= 0 ? num(c[seatI]) : NaN;
+      rows.push({ n: n.slice(0, 40), p, vt, s: isNaN(se) ? "" : String(se) });
+    }
+    if (rows.length >= 2 && (!best || rows.length > best.length)) best = rows;
+  }
+  if (!best) return null;
+  best = best.slice(0, 12);
+  let votes = 0;
+  if (best.every((r) => isNaN(r.p))) {
+    const sum = best.reduce((a, r) => a + r.vt, 0); votes = sum;
+    best.forEach((r) => { r.p = Math.round((r.vt / sum) * 1000) / 10; });
+  }
+  best = best.filter((r) => !isNaN(r.p)).sort((a, b) => b.p - a.p);
+  if (best.length < 2) return null;
+  const board = { rows: best.map((r) => ({ n: r.n, v: r.p, s: r.s, i: "" })), source: host, unit: "%" };
+  if (votes) board.votes = votes;
+  return { board, msg: "web table: " + best.length + " rows from " + host };
+}
 async function feedUpdate(env) {
-  const url = env.BOARD_FEED_URL || env.BOARD_CSV_URL, key = env.SUPABASE_SECRET_KEY;
-  if (!url || !key) return;
+  const key = env.SUPABASE_SECRET_KEY;
+  if (!key) return;
   const H = { apikey: key, "content-type": "application/json" };
   const cur = await (await fetch(SB + "/rest/v1/events?select=id,board&active=eq.true&order=id.desc&limit=1", { headers: H })).json();
   if (!Array.isArray(cur) || !cur.length) return;
   const id = cur[0].id, old = cur[0].board || {};
+  const url = (old.url && /^https:\/\//i.test(old.url) ? old.url : "") || env.BOARD_FEED_URL || env.BOARD_CSV_URL;
+  if (!url) return;
   if (old.auto === false) return;   // pausado desde el panel de admin
+  const every = Math.min(60, Math.max(2, +old.every || 2));
+  const lf = old.feed;
+  if (lf && lf.ok && lf.url === url && lf.at && Date.now() - Date.parse(lf.at) < every * 60000 - 30000) return;   // todavia no toca
   let res = null, err = "";
   try {
     const r = await fetch(url, { cf: { cacheTtl: 20, cacheEverything: true }, signal: AbortSignal.timeout(9000) });
     if (!r.ok) throw new Error("feed answered " + r.status);
     const text = decodeFeed(await r.arrayBuffer());
     res = parseCec(text, old.names || {});
-    if (!res) { const b = parseBoard(text); if (!b.rows.length) throw new Error("file format not recognized"); res = { board: b, msg: "simple file: " + b.rows.length + " rows" }; }
-  } catch (e) { err = String(e && e.message || e).slice(0, 120); }
+    if (!res && /<tr[\s>]/i.test(text)) {
+      let host = ""; try { host = new URL(url).hostname.replace(/^www\./, ""); } catch (e) {}
+      res = parseHtml(text, host);
+      if (!res) throw new Error("no results table found on that page (it may load its numbers with scripts) | " + text.length + " chars");
+    }
+    if (!res) {
+      const b = parseBoard(text);
+      if (!b.rows.length) throw new Error("file format not recognized | " + (r.headers.get("content-type") || "?") + " | " + text.length + " chars | starts: " + text.slice(0, 220).replace(/\s+/g, " "));
+      res = { board: b, msg: "simple file: " + b.rows.length + " rows" };
+    }
+  } catch (e) { err = String(e && e.message || e).slice(0, 400); }
   const at = new Date().toISOString();
   let nb;
-  if (res) nb = Object.assign({}, old, res.board, { updated: at, auto: true, feed: { ok: true, at, msg: res.msg } });
-  else nb = Object.assign({}, old, { feed: { ok: false, at, msg: err } });
+  if (res) nb = Object.assign({}, old, res.board, { updated: at, auto: true, feed: { ok: true, at, msg: res.msg, url } });
+  else nb = Object.assign({}, old, { feed: { ok: false, at, msg: err, url } });
   const sig = (b) => JSON.stringify([b.rows, b.votes, b.source, b.counted, b.note, b.feed && b.feed.ok, b.feed && b.feed.msg]);
   if (sig(nb) === sig(old)) return;
   await fetch(SB + "/rest/v1/events?id=eq." + id, { method: "PATCH", headers: Object.assign({ prefer: "return=minimal" }, H), body: JSON.stringify({ board: nb }) });
