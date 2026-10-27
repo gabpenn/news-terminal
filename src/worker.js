@@ -165,6 +165,7 @@ function parseBoard(t) {
     if (n.startsWith("_")) { b[n.slice(1).toLowerCase()] = (c[1] || "").slice(0, 80); return; }
     const v = parseFloat(c[1]);
     if (!n || isNaN(v) || b.rows.length >= 12) return;
+    if (!/^[\p{L}]/u.test(n) || /[{}<>;=]|\/\//.test(n)) return;   // descarta basura de paginas o codigo
     b.rows.push({ n: n.slice(0, 40), v, s: (c[2] || "").slice(0, 10), i: /^https:\/\//i.test(c[3] || "") ? c[3] : "" });
   });
   return b;
