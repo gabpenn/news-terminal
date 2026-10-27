@@ -307,6 +307,92 @@ function parseHtml(text, host) {
   if (votes) board.votes = votes;
   return { board, msg: "web table: " + best.length + " rows from " + host };
 }
+
+// ---- Lector general: JSON (APIs y datos incrustados en paginas) y patrones de texto ("Nombre 23,7%") ----
+function htmlClean(x) {
+  return x.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<sup[\s\S]*?<\/sup>|<!--[\s\S]*?-->/gi, " ").replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;|&#160;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;|&#34;/g, '"').replace(/&#39;|&apos;|&rsquo;/g, "'")
+    .replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/\[\d+\]/g, "").replace(/\s+/g, " ").trim();
+}
+function finishRows(rows, host, label) {
+  // rows: [{n, p (porcentaje o NaN), vt (votos o NaN), s}]
+  rows = rows.slice(0, 12);
+  let votes = 0;
+  if (rows.length && rows.every((r) => isNaN(r.p))) {
+    const sum = rows.reduce((a, r) => a + (r.vt || 0), 0);
+    if (!(sum > 0)) return null;
+    votes = sum; rows.forEach((r) => { r.p = Math.round(((r.vt || 0) / sum) * 1000) / 10; });
+  }
+  rows = rows.filter((r) => !isNaN(r.p)).sort((a, b) => b.p - a.p);
+  if (rows.length < 2) return null;
+  const board = { rows: rows.map((r) => ({ n: r.n, v: r.p, s: r.s || "", i: "" })), source: host, unit: "%" };
+  if (votes) board.votes = votes;
+  return { board, msg: label + ": " + rows.length + " rows from " + host };
+}
+function parseJson(text, host) {
+  const blocks = [];
+  const t = text.trimStart();
+  if (/^[\[{]/.test(t)) blocks.push(t.slice(0, 600000));
+  else { const re = /<script[^>]*type="application\/(?:ld\+)?json"[^>]*>([\s\S]*?)<\/script>/gi; let m, k = 0; while ((m = re.exec(text.slice(0, 900000))) && k++ < 6) blocks.push(m[1].slice(0, 600000)); }
+  const NK = /^(name|party|candidate|nombre|partido|candidato|list|lista|label|title|team|shortname|short_name|partyname|candidatename)$/i;
+  const PK = /^(percent|percentage|pct|share|vote_?share|vote_?pct|vote_?percent(age)?|porcentaje|percentual|perc|value)$/i;
+  const VK = /^(votes?|votos|count|total|numvotes|total_votes)$/i;
+  const SK = /^(seats?|bancas|mandates?|escanos|escaños|won|cadeiras)$/i;
+  const toN = (x) => (typeof x === "number" ? x : typeof x === "string" ? parseFloat(x.replace(/[^\d.,-]/g, "").replace(/,(?=\d{3}\b)/g, "").replace(",", ".")) : NaN);
+  let best = null, seen = 0;
+  const walk = (o, d) => {
+    if (d > 9 || seen++ > 30000 || !o || typeof o !== "object") return;
+    if (Array.isArray(o)) {
+      if (o.length >= 2 && o.length <= 80 && o.every((x) => x && typeof x === "object" && !Array.isArray(x))) {
+        const keys = Object.keys(o[0]);
+        const nk = keys.find((k) => NK.test(k) && typeof o[0][k] === "string");
+        const pk = keys.find((k) => PK.test(k) && !isNaN(toN(o[0][k])));
+        const vk = keys.find((k) => VK.test(k) && !isNaN(toN(o[0][k])));
+        const sk = keys.find((k) => SK.test(k) && !isNaN(toN(o[0][k])));
+        if (nk && (pk || vk)) {
+          const rows = o.map((x) => ({ n: String(x[nk] || "").trim().slice(0, 40), p: pk ? toN(x[pk]) : NaN, vt: vk ? toN(x[vk]) : NaN, s: sk && !isNaN(toN(x[sk])) ? String(toN(x[sk])) : "" })).filter((r) => r.n && !/^(total|turnout|valid|invalid|blank|others?)\b/i.test(r.n) && (!isNaN(r.p) || r.vt > 0));
+          if (rows.length >= 2 && (!best || rows.length > best.length)) best = rows;
+        }
+      }
+      o.slice(0, 200).forEach((x) => walk(x, d + 1));
+    } else Object.keys(o).slice(0, 200).forEach((k) => walk(o[k], d + 1));
+  };
+  for (const b of blocks) { try { walk(JSON.parse(b), 0); } catch (e) {} }
+  return best ? finishRows(best, host, "json data") : null;
+}
+function parseText(text, host) {
+  const t = htmlClean(text.slice(0, 300000)).slice(0, 150000);
+  const re = /(\p{Lu}[\p{L}.'&\-]*(?: [\p{L}.'&\-]+){0,3}?)\s*(?:[:\-–—(]|\bwith\b|\bcon\b)?\s*(\d{1,2}(?:[.,]\d{1,2})?)\s?%/gu;
+  const STOP = /^(the|and|with|about|according|votes?|turnout|percent|per cent|up|down|from|to|of|in|at|by|after|before|counted|results?|vote share|share|total|valid|exit polls?|polls?)$/i;
+  const ms = []; let m;
+  while ((m = re.exec(t))) {
+    const n = m[1].trim().replace(/\s+/g, " ");
+    if (n.length < 2 || STOP.test(n) || n.split(" ").every((w) => STOP.test(w))) continue;
+    const p = parseFloat(m[2].replace(",", "."));
+    if (p > 0 && p <= 100) ms.push({ n, p, idx: m.index });
+  }
+  let best = null, cur = [];
+  const flush = () => { const seenN = new Set(), g = cur.filter((x) => !seenN.has(x.n) && seenN.add(x.n)); const sum = g.reduce((a, x) => a + x.p, 0); if (g.length >= 3 && sum >= 40 && sum <= 105 && (!best || g.length > best.length)) best = g; cur = []; };
+  ms.forEach((x, i) => { if (cur.length && x.idx - ms[i - 1].idx > 400) flush(); cur.push(x); });
+  flush();
+  return best ? finishRows(best.map((x) => ({ n: x.n.slice(0, 40), p: x.p, vt: NaN, s: "" })), host, "text patterns (a guess, please check it)") : null;
+}
+// Lee un link (archivo oficial, CSV, JSON, tabla web o texto) y devuelve {board,msg}; si no entiende, lanza un error claro.
+async function readFeed(url, names) {
+  const r = await fetch(url, { cf: { cacheTtl: 20, cacheEverything: true }, signal: AbortSignal.timeout(9000), headers: { "User-Agent": "Mozilla/5.0 (compatible; ZondaWire/0.3)", Accept: "text/html,application/json,text/csv,*/*" } });
+  if (!r.ok) throw new Error("the link answered " + r.status);
+  const text = decodeFeed(await r.arrayBuffer());
+  let host = ""; try { host = new URL(url).hostname.replace(/^www\./, ""); } catch (e) {}
+  const head = text.slice(0, 5000), isHtml = /<(html|body|div|p|table|script|head)[\s>]/i.test(head);
+  let res = parseCec(text, names || {});
+  if (!res && !isHtml && /^\s*[\[{]/.test(text)) res = parseJson(text, host);
+  if (!res && /<tr[\s>]/i.test(text)) res = parseHtml(text, host);
+  if (!res && isHtml) res = parseJson(text, host);
+  if (!res && !isHtml) { const b = parseBoard(text); if (b.rows.length) res = { board: b, msg: "simple file: " + b.rows.length + " rows" }; }
+  if (!res && isHtml) res = parseText(text, host);
+  if (!res) throw new Error("could not find results in that link (names with percentages or votes). Pages that load their numbers with scripts, like Google results, cannot be read | " + (r.headers.get("content-type") || "?") + " | " + text.length + " chars | starts: " + text.slice(0, 160).replace(/\s+/g, " "));
+  return res;
+}
 async function feedUpdate(env) {
   const key = env.SUPABASE_SECRET_KEY;
   if (!key) return;
@@ -322,24 +408,11 @@ async function feedUpdate(env) {
   if (lf && lf.ok && lf.url === url && lf.at && Date.now() - Date.parse(lf.at) < every * 60000 - 30000) return;   // todavia no toca
   let res = null, err = "";
   try {
-    const r = await fetch(url, { cf: { cacheTtl: 20, cacheEverything: true }, signal: AbortSignal.timeout(9000) });
-    if (!r.ok) throw new Error("feed answered " + r.status);
-    const text = decodeFeed(await r.arrayBuffer());
-    res = parseCec(text, old.names || {});
-    if (!res && /<tr[\s>]/i.test(text)) {
-      let host = ""; try { host = new URL(url).hostname.replace(/^www\./, ""); } catch (e) {}
-      res = parseHtml(text, host);
-      if (!res) throw new Error("no results table found on that page (it may load its numbers with scripts) | " + text.length + " chars");
-    }
-    if (!res) {
-      const b = parseBoard(text);
-      if (!b.rows.length) throw new Error("file format not recognized | " + (r.headers.get("content-type") || "?") + " | " + text.length + " chars | starts: " + text.slice(0, 220).replace(/\s+/g, " "));
-      res = { board: b, msg: "simple file: " + b.rows.length + " rows" };
-    }
+    res = await readFeed(url, old.names || {});
   } catch (e) { err = String(e && e.message || e).slice(0, 400); }
   const at = new Date().toISOString();
   let nb;
-  if (res) nb = Object.assign({}, old, res.board, { updated: at, auto: true, feed: { ok: true, at, msg: res.msg, url } });
+  if (res) nb = Object.assign({}, (({ votes, counted, note, source, unit, ...keep }) => keep)(old), res.board, { updated: at, auto: true, feed: { ok: true, at, msg: res.msg, url } });
   else nb = Object.assign({}, old, { feed: { ok: false, at, msg: err, url } });
   const sig = (b) => JSON.stringify([b.rows, b.votes, b.source, b.counted, b.note, b.feed && b.feed.ok, b.feed && b.feed.msg]);
   if (sig(nb) === sig(old)) return;
@@ -396,6 +469,23 @@ export default {
         }));
       }
       return Response.json({ q, updated: Date.now(), hasKey: !!key }, { headers: { "cache-control": "public, max-age=20" } });
+    }
+    if (url.pathname === "/api/feedtest") {
+      // Prueba un link SIN publicar nada. Solo para administradores (se verifica el usuario en Supabase).
+      const j = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: { "content-type": "application/json", "cache-control": "no-store" } });
+      const key = env.SUPABASE_SECRET_KEY, tk = (req.headers.get("authorization") || "").replace(/^Bearer /i, "");
+      if (!key || !tk) return j({ ok: false, error: "not allowed" }, 401);
+      try {
+        const u = await (await fetch(SB + "/auth/v1/user", { headers: { apikey: key, authorization: "Bearer " + tk } })).json();
+        if (!u || !u.id) return j({ ok: false, error: "not allowed" }, 401);
+        const ad = await (await fetch(SB + "/rest/v1/admins?select=user_id&user_id=eq." + encodeURIComponent(u.id), { headers: { apikey: key } })).json();
+        if (!Array.isArray(ad) || !ad.length) return j({ ok: false, error: "not allowed" }, 403);
+      } catch (e) { return j({ ok: false, error: "could not check your login" }, 500); }
+      const target = url.searchParams.get("u") || "";
+      let th = ""; try { th = new URL(target).hostname; } catch (e) {}
+      if (!/^https:\/\//i.test(target) || !th || /^(localhost|\[|\d+\.\d+\.\d+\.\d+$)/i.test(th)) return j({ ok: false, error: "the link must be a normal https:// address" }, 400);
+      try { const res = await readFeed(target, {}); return j({ ok: true, msg: res.msg, rows: res.board.rows, votes: res.board.votes || null }); }
+      catch (e) { return j({ ok: false, error: String(e && e.message || e).slice(0, 400) }); }
     }
     if (url.pathname === "/api/chart") {
       // Historial para los graficos: 1d, 5d, 1m, 1y (fuente: Yahoo Finance, sin clave)
