@@ -135,10 +135,24 @@ function orderedFeeds() {
 function pickFeeds() { return orderedFeeds().slice(0, LIMIT); }
 
 // Recolector: corre solo cada minuto, lee los medios y guarda las noticias en Supabase.
-// Tablero automatico (opcional): si definis la variable BOARD_CSV_URL en Cloudflare, cada minuto se lee ese CSV
-// (por ejemplo una hoja de Google publicada como CSV) y se copia al evento fijado activo.
-// Formato: una fila por linea: nombre,valor,bancas,imagen   y filas de datos extra: _counted,63   _source,Fuente   _unit,%
+// ---------- Tablero automatico (resultados de elecciones) ----------
+// Se configura con la variable BOARD_FEED_URL en Cloudflare. Acepta dos tipos de link:
+//  1) El archivo oficial de la Comision Electoral de Israel (CSV por localidad, con columnas por lista). Se suman todas las localidades.
+//  2) Un CSV simple (por ejemplo una hoja de Google publicada): una fila por lista: nombre,porcentaje,bancas,foto
+//     y filas extra: _counted,63   _source,Fuente   _unit,%
+// Corre cada 2 minutos (segundo cron) para no gastar el limite del plan gratis. Si algo no cuadra, NO pisa los datos que ya estan.
+const DEF_NAMES = {
+  // Letras de las boletas, Knesset 2026 (listado de Mako y Handled; "כן", "צבי" y "רץ" figuran en una sola fuente)
+  "מחל": "Likud (Netanyahu)", "רק": "Together (Bennett)", "דרך": "Yashar (Eisenkot)", "אמת": "The Democrats (Golan)", "כן": "Blue and White (Gantz)",
+  "ל": "Yisrael Beiteinu (Lieberman)", "ב": "Otzma Yehudit (Ben-Gvir)", "ט": "Religious Zionism + Zehut", "שס": "Shas", "ג": "United Torah Judaism",
+  "עם": "Ra'am", "ודם": "Joint List", "ני": "Noam", "די": "Reservists and Economic Party", "פה": "Ani VeAta", "רץ": "Hakahal", "צבי": "Ahi Movement",
+  "ד": "Partnership for Everyone", "צף": "Pirate Party", "ך": "Amcha Yisrael", "י": "Israel First", "ה": "Garden of Eden", "קה": "Women's Voice",
+  "בד": "Together We Will Succeed", "קץ": "Just Law", "נף": "Shema", "קך": "New Order", "זך": "Haredi Public", "זץ": "Eternal Covenant",
+  "נקי": "Fixing the Electoral System", "יק": "Biblical Bloc", "ז": "Social Security", "בקר": "Dawn's Light", "נץ": "Personal Security",
+  "נר": "The Color Black", "בי": "House of Israel Junction", "ק": "Tkuma", "צדק": "Sharshar for Love and Unity"
+};
 function csvLine(l) {
+  if (l.indexOf('"') < 0) return l.split(",").map((x) => x.trim());
   const o = []; let c = "", q = false;
   for (const ch of l) { if (ch === '"') q = !q; else if (ch === "," && !q) { o.push(c); c = ""; } else c += ch; }
   o.push(c); return o.map((x) => x.trim());
@@ -155,18 +169,100 @@ function parseBoard(t) {
   });
   return b;
 }
-async function updateBoard(env, key) {
-  const r = await fetch(env.BOARD_CSV_URL, { cf: { cacheTtl: 30, cacheEverything: true }, signal: AbortSignal.timeout(8000) });
-  if (!r.ok) return;
-  const b = parseBoard(await r.text());
-  if (!b.rows.length) return;
-  const cur = await (await fetch(SB + "/rest/v1/events?select=board&active=eq.true&limit=1", { headers: { apikey: key } })).json();
+function decodeFeed(buf) {
+  let t = new TextDecoder("utf-8").decode(buf);
+  if (t.includes("�") || !/[֐-׿]/.test(t)) {
+    try { const t2 = new TextDecoder("windows-1255").decode(buf); if (/[֐-׿]/.test(t2)) t = t2; } catch (e) {}
+  }
+  return t.replace(/^﻿/, "");
+}
+// Reparto de bancas (D'Hondt entre las listas que pasan el piso de 3.25%). Es una proyeccion, no el reparto oficial.
+function seatsFor(votes, total) {
+  const ok = votes.map((v) => (total > 0 && v / total >= 0.0325 ? v : 0));
+  const seats = votes.map(() => 0);
+  for (let k = 0; k < 120; k++) {
+    let best = -1, bq = 0;
+    for (let i = 0; i < ok.length; i++) { if (!ok[i]) continue; const q = ok[i] / (seats[i] + 1); if (q > bq) { bq = q; best = i; } }
+    if (best < 0) break;
+    seats[best]++;
+  }
+  return seats;
+}
+// Devuelve { board } si es el archivo oficial, o null si no lo parece. Lanza Error si lo parece pero no cuadra.
+function parseCec(text, names) {
+  const lines = text.split(/\r?\n/);
+  let hi = -1, head = null, vi = -1;
+  for (let i = 0; i < Math.min(lines.length, 12); i++) {
+    const c = csvLine(lines[i]);
+    const k = c.findIndex((x) => /^(כשרים|valid)$/i.test(x));
+    if (k >= 0) { hi = i; head = c; vi = k; break; }
+  }
+  if (hi < 0) return null;
+  const codes = head.slice(vi + 1);
+  const nC = codes.length;
+  let sums = new Array(nC).fill(0), totArr = null, valid = 0, totValid = 0, rowsN = 0;
+  // Lectura rapida caracter por caracter (el plan gratis solo permite ~10 ms de procesador)
+  let pos = 0; for (let k = 0; k <= hi; k++) { const e = text.indexOf("\n", pos); if (e < 0) { pos = text.length; break; } pos = e + 1; }
+  const L = text.length;
+  let col = 0, n = 0, q = false, cell0 = "", isTot = false, rowValid = 0, got = false, start = true;
+  const endCell = () => {
+    if (col === 0) { isTot = /סה.?כ|total/i.test(cell0); if (isTot && !totArr) totArr = new Array(nC).fill(0); }
+    else if (col === vi) { rowValid = n; if (isTot) totValid = n; else { valid += n; if (n) rowsN++; } }
+    else if (col > vi && col - vi - 1 < nC) { if (isTot) totArr[col - vi - 1] = n; else sums[col - vi - 1] += n; }
+    col++; n = 0; start = true;
+  };
+  for (let p = pos; p < L; p++) {
+    const ch = text.charCodeAt(p);
+    if (q) {
+      if (ch === 34) { if (text.charCodeAt(p + 1) === 34) { p++; if (col === 0 && cell0.length < 40) cell0 += '"'; } else q = false; }
+      else if (col === 0 && cell0.length < 40) cell0 += text[p];
+      continue;
+    }
+    if (ch === 34 && start) { q = true; start = false; continue; }
+    start = false;
+    if (ch === 44) { endCell(); continue; }
+    if (ch === 10) { if (got) endCell(); col = 0; n = 0; cell0 = ""; isTot = false; got = false; start = true; continue; }
+    if (ch >= 48 && ch <= 57) { n = n * 10 + (ch - 48); got = true; if (col === 0 && cell0.length < 40) cell0 += text[p]; continue; }
+    if (ch === 13 || ch === 32) { if (col === 0 && cell0.length < 40 && ch === 32) cell0 += " "; continue; }
+    got = true; if (col === 0 && cell0.length < 40) cell0 += text[p];
+  }
+  if (got) endCell();
+  if (totArr) { valid = totValid; sums = totArr; }
+  const sumParties = sums.reduce((a, b) => a + b, 0);
+  if (valid <= 0) throw new Error("no valid votes counted yet");
+  if (sumParties < valid * 0.9 || sumParties > valid * 1.02) throw new Error("columns do not add up (" + sumParties + " vs " + valid + " valid votes)");
+  const seats = seatsFor(sums, valid);
+  let rows = codes.map((code, j) => ({ code, v: sums[j], s: seats[j] })).filter((x) => x.code && x.v > 0).sort((a, b) => b.v - a.v);
+  const nParties = rows.length;
+  const nm = (code) => (names && names[code]) || DEF_NAMES[code] || code;
+  const top = rows.slice(0, 10).map((x) => ({ n: nm(x.code).slice(0, 40), v: Math.round((x.v / valid) * 1000) / 10, s: x.s ? String(x.s) : "", i: "" }));
+  const rest = rows.slice(10).reduce((a, x) => a + x.v, 0);
+  if (rest > 0) top.push({ n: "Others (" + (nParties - 10) + " lists)", v: Math.round((rest / valid) * 1000) / 10, s: "", i: "" });
+  return { board: { rows: top, votes: valid, unit: "%", source: "Central Elections Committee, unofficial relay", note: "Seats are a projection (3.25% threshold), not official." }, msg: "official file: " + nParties + " lists, " + valid.toLocaleString("en-US") + " valid votes, " + rowsN + " places" };
+}
+async function feedUpdate(env) {
+  const url = env.BOARD_FEED_URL || env.BOARD_CSV_URL, key = env.SUPABASE_SECRET_KEY;
+  if (!url || !key) return;
+  const H = { apikey: key, "content-type": "application/json" };
+  const cur = await (await fetch(SB + "/rest/v1/events?select=id,board&active=eq.true&order=id.desc&limit=1", { headers: H })).json();
   if (!Array.isArray(cur) || !cur.length) return;
-  const old = cur[0].board || {};
-  const same = JSON.stringify([old.rows, old.counted, old.source, old.unit]) === JSON.stringify([b.rows, b.counted, b.source, b.unit]);
-  if (same) return;
-  b.updated = new Date().toISOString();
-  await fetch(SB + "/rest/v1/events?active=eq.true", { method: "PATCH", headers: { apikey: key, "content-type": "application/json", prefer: "return=minimal" }, body: JSON.stringify({ board: b }) });
+  const id = cur[0].id, old = cur[0].board || {};
+  if (old.auto === false) return;   // pausado desde el panel de admin
+  let res = null, err = "";
+  try {
+    const r = await fetch(url, { cf: { cacheTtl: 20, cacheEverything: true }, signal: AbortSignal.timeout(9000) });
+    if (!r.ok) throw new Error("feed answered " + r.status);
+    const text = decodeFeed(await r.arrayBuffer());
+    res = parseCec(text, old.names || {});
+    if (!res) { const b = parseBoard(text); if (!b.rows.length) throw new Error("file format not recognized"); res = { board: b, msg: "simple file: " + b.rows.length + " rows" }; }
+  } catch (e) { err = String(e && e.message || e).slice(0, 120); }
+  const at = new Date().toISOString();
+  let nb;
+  if (res) nb = Object.assign({}, old, res.board, { updated: at, auto: true, feed: { ok: true, at, msg: res.msg } });
+  else nb = Object.assign({}, old, { feed: { ok: false, at, msg: err } });
+  const sig = (b) => JSON.stringify([b.rows, b.votes, b.source, b.counted, b.note, b.feed && b.feed.ok, b.feed && b.feed.msg]);
+  if (sig(nb) === sig(old)) return;
+  await fetch(SB + "/rest/v1/events?id=eq." + id, { method: "PATCH", headers: Object.assign({ prefer: "return=minimal" }, H), body: JSON.stringify({ board: nb }) });
 }
 
 // Rotacion: en cada vuelta (1 por minuto) lee solo PER_RUN medios y la vuelta siguiente lee los proximos.
@@ -189,12 +285,12 @@ async function collect(env, when) {
     await fetch(SB + "/rest/v1/news?on_conflict=link", { method: "POST", headers: h, body: JSON.stringify(rows.slice(k, k + 300)) });
   }
   await fetch(SB + "/rest/v1/news?published_at=lt." + encodeURIComponent(new Date(Date.now() - 86400000).toISOString()), { method: "DELETE", headers: { apikey: key } });
-  if (env.BOARD_CSV_URL) { try { await updateBoard(env, key); } catch (e) {} }
 }
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(collect(env, event.scheduledTime));
+    if (event.cron === "*/2 * * * *") ctx.waitUntil(feedUpdate(env).catch(() => {}));
+    else ctx.waitUntil(collect(env, event.scheduledTime));
   },
   async fetch(req, env) {
     const url = new URL(req.url);
