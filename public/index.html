@@ -98,7 +98,19 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 #au input{background:#000;color:var(--tx);border:1px solid var(--ln);padding:8px}#au .bt{display:flex;gap:6px}
 #au button{padding:6px 12px;border:0;font-weight:600;letter-spacing:1px;background:var(--am);color:#000}#au button.x{background:var(--hd);color:var(--dm)}#au p{margin:0;color:var(--dm);font-size:14px}
 .m .dl{background:none;border:0;color:var(--dn);font-size:13px;margin-left:8px;padding:0}.at a{color:inherit;text-decoration:none}.at a:hover{text-decoration:underline}
-#ad{position:absolute;inset:0;background:var(--bg);z-index:3;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px}#ad[hidden]{display:none}#ad>*{flex:none}#ad textarea{min-height:110px}
+#ad{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.88);overflow:auto}#ad[hidden]{display:none}
+.adw{max-width:800px;margin:0 auto;min-height:100%;background:var(--bg);padding:10px 14px 40px;display:flex;flex-direction:column;gap:8px;border-left:1px solid var(--ln);border-right:1px solid var(--ln)}.adw>*{flex:none}
+.adh{display:flex;justify-content:space-between;align-items:center;font-size:22px;letter-spacing:2px;color:var(--am)}
+#asum{display:flex;flex-wrap:wrap;gap:6px}#asum span{border:1px solid var(--ln);padding:2px 8px;font-size:14px;color:var(--dm);letter-spacing:.5px}#asum span.ok{border-color:var(--up);color:var(--up)}#asum span.warn{border-color:var(--am);color:var(--am)}#asum span.bad{border-color:var(--dn);color:var(--dn)}
+#atabs{display:flex;gap:4px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:4px 0;z-index:2;border-bottom:1px solid var(--ln)}#ad #atabs button{background:var(--hd);color:var(--dm);padding:7px 12px}#ad #atabs button.on{background:var(--am);color:#000}#atabs i{font-style:normal;background:var(--dn);color:#fff;padding:0 6px;margin-left:6px;border-radius:9px}#atabs i:empty{display:none}
+#amsg{color:var(--am);min-height:20px;font-size:15px}
+.tp{display:none;flex-direction:column;gap:6px}.tp.on{display:flex}.tp>*{flex:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}#ad .chips button{padding:3px 9px;font-size:14px}
+.sw{display:flex;gap:8px}#ad .sw button{width:40px;height:28px;padding:0;border:2px solid transparent}#ad .sw button.on{border-color:#fff}
+#ad label.ck{display:flex;gap:8px;align-items:center;color:var(--tx)}#ad input[type=checkbox]{width:18px;height:18px}
+#ad .al.off{opacity:.5}#ad .al>span:first-child{flex:1;min-width:0;overflow-wrap:anywhere}#ad .al .bt{flex:none}
+#ad details{border:1px solid var(--ln);padding:6px}#ad summary{cursor:pointer;color:var(--dm)}
+#ad .none{color:var(--dm)}#spvc{white-space:nowrap;padding:2px 10px}#spvc b{color:var(--am);font-weight:400;margin:0 12px}
 #ad input,#ad select{background:#000;color:var(--tx);border:1px solid var(--ln);padding:6px;font:inherit}
 #ad button{padding:5px 10px;border:0;font-weight:600;letter-spacing:1px;background:var(--am);color:#000}#ad button.x{background:var(--hd);color:var(--dm)}
 #ad h4{margin:8px 0 0;color:var(--am);letter-spacing:1px;font-size:14px}#ad .al{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--ln);padding:3px 0}#ad .bt{display:flex;gap:6px;flex-wrap:wrap}
@@ -158,7 +170,17 @@ a.h{font-weight:500;color:inherit;text-decoration:none}a.h:hover{text-decoration
 <nav id="tabs"><button data-p="pn" class="on">NEWS</button><button data-p="pp">PINNED</button><button data-p="pm">MARKETS</button><button data-p="pc">CHAT</button></nav>
 <main>
  <section class="p act" id="pn"><div class="ph"><span>TOP NEWS</span><small id="flt">Main: politics, economy, world affairs</small></div><div class="sr"><input id="sq" placeholder="Search headlines (last 24h, all sources)" autocomplete="off" aria-label="Search headlines"><button id="mub">MUTE</button></div><div id="mup" hidden><p>Hide words (separated by commas)</p><input id="mw" placeholder="e.g. kardashian, horoscope" autocomplete="off"><p>Hide sources (separated by commas)</p><input id="ms" list="srcs" placeholder="e.g. Daily Mail" autocomplete="off"><datalist id="srcs"></datalist><button id="mdone">SAVE</button> <button id="mclr">CLEAR ALL</button></div><div class="pb" id="news"></div></section>
- <section class="p pin" id="pp"><div id="ad" hidden><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div><h4>EVENT BOARD: results with bars (optional)</h4><div class="bhelp">Fill one row per party or candidate. Name and % are enough. Seats and photo link are optional. Then press UPDATE BOARD and it shows up in the pinned event and, if you type @board in the special strip, also there.</div><div class="bf"><input id="bdc" placeholder="% counted (e.g. 63)" inputmode="decimal"><input id="bds" placeholder="Source (e.g. Official committee, unofficial)" maxlength="80"></div><div id="bdr"></div><div class="bt"><button id="bdadd" class="x">+ ADD ROW</button></div><div class="bt"><button id="bdset">UPDATE BOARD</button><button id="bdload" class="x">LOAD CURRENT</button><button id="bdclr" class="x">CLEAR BOARD</button></div><div id="bdm" class="bhelp" style="color:var(--am);font-size:15px"></div><h4>AUTO FEED (results from an official link)</h4><div id="fds" class="bhelp">No feed information yet.</div><div class="bt"><button id="fdon">AUTO ON</button><button id="fdoff" class="x">AUTO OFF</button></div><div class="bhelp">Names are already built in for all 38 lists of the 2026 election. Only add a line here (CODE=Name) if you need to change one.</div><textarea id="fdn" style="display:block;width:100%;height:110px;background:#000;color:var(--tx);border:1px solid var(--ln);padding:6px;font:inherit" placeholder="פה=Together&#10;ט=Religious Zionism"></textarea><div class="bt"><button id="fdsv">SAVE NAMES</button></div><h4>RED STRIP ALERTS</h4><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bt"><button id="aadd">ADD ALERT</button></div><div id="alist"></div><h4>SPECIAL STRIP (elections, big events)</h4><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%   (or type @board to copy the event board)" maxlength="600"><select id="sco"><option value="blue">Strip color: Blue</option><option value="red">Strip color: Red</option><option value="green">Strip color: Green</option><option value="amber">Strip color: Amber</option></select><div class="bt"><button id="sset">UPDATE SPECIAL</button><button id="send2" class="x">END SPECIAL</button></div><h4>COUNTDOWNS (rotating strip, you can add many)</h4><input id="cdt" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="60"><div class="bf"><input id="cdd" type="datetime-local"><select id="cdz"></select></div><div class="bhelp">Pick the date and time as it will be in the place where it happens, and choose that place. The strip shows that place's local time and also each visitor's own local time.</div><div class="bt"><button id="cdadd">ADD COUNTDOWN</button></div><div id="cdlist"></div><h4>REPORTED MESSAGES</h4><div id="rplist"></div><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">END ALL ADS</button></div><div id="adlist"></div><div id="amsg" style="color:var(--dm)"></div><div class="bt"><button id="aclose" class="x">CLOSE</button></div></div><div class="ph"><span>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
+ <section class="p pin" id="pp"><div id="ad" hidden><div class="adw"><div class="adh"><b>ADMIN PANEL</b><button id="aclose" class="x">CLOSE</button></div><div id="asum"></div><div id="atabs"><button data-t="ev" class="on">EVENT</button><button data-t="st">STRIP</button><button data-t="al">ALERTS</button><button data-t="cd">COUNTDOWNS</button><button data-t="ad">ADS</button><button data-t="rp">REPORTS<i id="rpn"></i></button></div><div id="amsg"></div>
+<div class="tp on" data-t="ev"><h4>PINNED EVENT</h4><input id="et" placeholder="Event title" maxlength="120"><input id="ed" placeholder="Short description" maxlength="300"><input id="ek" placeholder="Keywords, separated by commas"><div class="bt"><button id="eset">SET EVENT</button><button id="eend" class="x">END EVENT</button></div>
+<h4>RESULTS BOARD (optional)</h4><div class="bhelp">One row per party or candidate. Name and % are enough. Press UPDATE BOARD and it shows in the pinned event. In the STRIP tab you can tick a box to copy it to the special strip.</div><div class="bf"><input id="bdc" placeholder="% counted (e.g. 63)" inputmode="decimal"><input id="bds" placeholder="Source (e.g. Official committee, unofficial)" maxlength="80"></div><div id="bdr"></div><div class="bt"><button id="bdadd" class="x">+ ADD ROW</button></div><div class="bt"><button id="bdset">UPDATE BOARD</button><button id="bdload" class="x">LOAD CURRENT</button><button id="bdclr" class="x">CLEAR BOARD</button></div><div id="bdm" class="bhelp" style="color:var(--am);font-size:15px"></div>
+<h4>AUTO FEED (official link)</h4><div id="fds" class="bhelp">No feed information yet.</div><div class="bt"><button id="fdon">AUTO ON</button><button id="fdoff" class="x">AUTO OFF</button></div>
+<details><summary>Rename parties (optional)</summary><div class="bhelp">Names are already built in for all 38 lists. Only add a line here (CODE=Name) to change one.</div><textarea id="fdn" style="display:block;width:100%;height:110px;background:#000;color:var(--tx);border:1px solid var(--ln);padding:6px;font:inherit" placeholder="פה=Together&#10;ט=Religious Zionism"></textarea><div class="bt"><button id="fdsv">SAVE NAMES</button></div></details></div>
+<div class="tp" data-t="st"><h4>SPECIAL STRIP (elections, big events)</h4><div class="bhelp">Quick start:</div><div class="chips" id="tpst"></div><input id="sti" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="80"><label class="ck"><input type="checkbox" id="sbd"> Use the results board numbers (updates by itself)</label><input id="sit" placeholder="Likud 28% | Blue and White 22% | Counted 63%   (separate items with  | )" maxlength="600"><div class="bhelp">Strip color:</div><div class="sw" id="swc"></div><select id="sco" style="display:none"><option value="blue">Blue</option><option value="red">Red</option><option value="green">Green</option><option value="amber">Amber</option></select><div class="bhelp">Preview (this is how visitors will see it):</div><div class="crawl sp on" id="spv" data-c="blue"><span class="lbl" id="spvl">SPECIAL</span><div class="vp"><div id="spvc"></div></div></div><div class="bt"><button id="sset">PUBLISH STRIP</button><button id="send2" class="x">TURN OFF</button><button id="sptpl" class="x">SAVE AS TEMPLATE</button></div><h4>RECENT STRIPS</h4><div id="splist"></div></div>
+<div class="tp" data-t="al"><h4>RED STRIP ALERTS</h4><div class="bhelp">Quick start:</div><div class="chips" id="tpal"></div><input id="alt" placeholder="Alert text" maxlength="200"><select id="aexp"><option value="1">Expires in 1 hour</option><option value="3">Expires in 3 hours</option><option value="12">Expires in 12 hours</option><option value="24">Expires in 24 hours</option><option value="0">Never expires</option></select><div class="bhelp">Preview:</div><div class="crawl"><span class="lbl">ALERT</span><div class="vp"><div id="alpv" style="white-space:nowrap"></div></div></div><div class="bt"><button id="aadd">ADD ALERT</button><button id="altpl" class="x">SAVE AS TEMPLATE</button></div><h4>RECENT ALERTS</h4><div id="alist"></div></div>
+<div class="tp" data-t="cd"><h4>COUNTDOWNS (rotating strip, you can add many)</h4><input id="cdt" placeholder="Title, e.g. ISRAEL ELECTIONS" maxlength="60"><div class="bf"><input id="cdd" type="datetime-local"><select id="cdz"></select></div><div class="bhelp">Pick the date and time as it will be in the place where it happens, and choose that place. The strip shows that place's local time and also each visitor's own local time.</div><div class="bt"><button id="cdadd">ADD COUNTDOWN</button></div><div id="cdlist"></div></div>
+<div class="tp" data-t="ad"><h4>SPONSORED (ads)</h4><input id="adt" placeholder="Ad text" maxlength="140"><input id="adu" placeholder="Link (https://...)"><select id="ade"><option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="0">No expiry</option></select><div class="bhelp">Preview:</div><div class="pbar" id="adpv" style="display:flex;background:#ff9d00;color:#000"><small>SPONSORED</small><span id="adpvt"></span></div><div class="bt"><button id="adadd">ADD AD</button><button id="adend" class="x">TURN OFF ALL ADS</button></div><div id="adlist"></div></div>
+<div class="tp" data-t="rp"><h4>REPORTED MESSAGES</h4><div id="rplist"></div></div>
+</div></div><div class="ph"><span>PINNED EVENT</span><span><button id="adb" class="hb" hidden>ADMIN</button> <span class="live" id="lv"></span></span></div><div class="pb"><div id="pe"></div><div id="ups"></div></div></section>
  <div class="col">
   <section class="p" id="pm"><div id="ch" hidden><div class="chh"><span><b id="cht"></b><small id="chn"></small></span><button id="chx">CLOSE</button></div><div class="chp"><b id="chv"></b><span id="chc"></span></div><div class="chr"><button data-r="1d" class="on">1D</button><button data-r="5d">5D</button><button data-r="1m">1M</button><button data-r="1y">1Y</button></div><div id="chg"></div><div id="chm"></div><div class="chs">Delayed data, not investment advice. Source: Yahoo Finance.</div></div><div class="ph"><span>MARKETS</span><small>delayed · not advice · WL &lt;GO&gt;</small></div><div class="pb" id="mk"></div>
    <div id="pk" hidden><div class="pkh"><input id="pks" placeholder="Search company or ticker" autocomplete="off" aria-label="Search company"><button id="pkd">DONE</button></div><div class="pkh"><input id="pka" placeholder="Add any ticker: AAPL, TSLA, BINANCE:SOLUSDT" autocomplete="off" aria-label="Add ticker"><button id="pkb">ADD</button></div><div id="pkm" class="none"></div><div id="pkl"></div></div></section>
@@ -402,6 +424,72 @@ function chatInit(){
  sb.channel("chat").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},p=>{if(ROWS.some(r=>r.id===p.new.id))return;ROWS.push(p.new);if(ROWS.length>200)ROWS.shift();first=false;$("msgs").appendChild(rowEl(p.new));$("msgs").scrollTop=1e9})
   .on("postgres_changes",{event:"DELETE",schema:"public",table:"messages"},p=>{ROWS=ROWS.filter(r=>r.id!==p.old.id);redraw()}).subscribe();
 }
+/* panel admin: pestañas, resumen, plantillas, vista previa */
+let RPN=0,ADA=[];
+const lsGet=(k)=>{try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){return[]}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+function drawSummary(){
+ const s=$("asum");if(!s)return;s.innerHTML="";
+ const chip=(t,c)=>s.appendChild(el("span",c||"",t)),b=EV&&EV.board,nl=liveAL().length;
+ chip("EVENT: "+(EV?String(EV.title).slice(0,28):"none"),EV?"ok":"warn");
+ if(EV){if(b&&b.feed)chip("FEED: "+(b.auto===false?"paused":b.feed.ok?"OK":"PROBLEM"),b.auto===false?"warn":b.feed.ok?"ok":"bad");else chip("FEED: off","")}
+ chip("STRIP: "+(SP?String(SP.title).slice(0,24):"off"),SP?"ok":"");
+ chip("ALERTS: "+nl,nl?"ok":"");
+ chip("COUNTDOWNS: "+CD.filter(x=>new Date(x.target).getTime()>Date.now()-6*36e5).length,"");
+ chip("ADS: "+ADS.length,"");
+ chip("REPORTS: "+RPN,RPN?"bad":"");
+}
+function showTab(t){
+ document.querySelectorAll("#atabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+ document.querySelectorAll("#ad .tp").forEach(p=>p.classList.toggle("on",p.dataset.t===t));
+ try{localStorage.setItem("zw_atab",t)}catch(e){}
+}
+function spPrev(){
+ const p=$("spv");if(!p)return;p.dataset.c=$("sco").value;$("spvl").textContent=$("sti").value.trim()||"SPECIAL";
+ const txt=$("sbd").checked?boardStrip():$("sit").value,c=$("spvc");c.innerHTML="";
+ const its=txt.split("|").map(x=>x.trim()).filter(Boolean);
+ if(!its.length)c.textContent="(nothing to show yet)";else its.forEach(x=>c.append(x,el("b","","//")));
+}
+function setColor(v){$("sco").value=v;document.querySelectorAll("#swc button").forEach(b=>b.classList.toggle("on",b.dataset.c===v));spPrev()}
+function stSync(){const on=$("sbd").checked;$("sit").disabled=on;$("sit").style.opacity=on?".4":"1";spPrev()}
+const STB=[{n:"ELECTIONS",t:"ELECTION RESULTS",b:1,c:"blue"},{n:"BREAKING",t:"BREAKING",i:"",c:"red"},{n:"MARKETS",t:"MARKETS",i:"",c:"green"}];
+const ALB=[{n:"BREAKING",i:"BREAKING: "},{n:"DEVELOPING",i:"DEVELOPING: "},{n:"JUST IN",i:"JUST IN: "},{n:"UPDATE",i:"UPDATE: "}];
+function drawChips(box,key,built,apply){
+ const b=$(box);b.innerHTML="";const saved=lsGet(key);
+ built.forEach(t=>{const x=el("button","x",t.n);x.onclick=()=>apply(t);b.appendChild(x)});
+ saved.forEach((t,j)=>{const x=el("button","x",t.n);x.onclick=()=>apply(t);b.appendChild(x);const d=el("button","x","×");d.title="Remove this template";d.onclick=()=>{saved.splice(j,1);lsSet(key,saved);drawChips(box,key,built,apply)};b.appendChild(d)});
+}
+const stApply=t=>{$("sti").value=t.t||"";$("sbd").checked=!!t.b;$("sit").value=t.i||"";setColor(t.c||"blue");stSync();showTab("st")};
+const alApply=t=>{$("alt").value=t.i||"";$("alt").focus();alPrev()};
+function alPrev(){$("alpv").textContent=$("alt").value||"(alert text)"}
+function adPrev(){$("adpvt").textContent=$("adt").value||"Your ad text here"}
+function drawSpHist(rows){
+ const l=$("splist");if(!l)return;l.innerHTML="";
+ if(!rows.length){l.appendChild(el("div","none","No strips yet."));return}
+ rows.forEach(r=>{const d=el("div","al"+(r.active?"":" off"));d.appendChild(el("span","",(r.active?"[ON] ":"")+r.title+" · "+(r.items==="@board"?"results board":String(r.items).slice(0,70))));
+  const bt=el("span","bt"),tg=el("button","x",r.active?"TURN OFF":"TURN ON");
+  tg.onclick=async()=>{if(r.active)await sb.from("specials").update({active:false}).eq("id",r.id);else{await sb.from("specials").update({active:false}).eq("active",true);await sb.from("specials").update({active:true}).eq("id",r.id)}loadExtra()};
+  const lo=el("button","x","LOAD");lo.onclick=()=>{stApply({t:r.title,b:r.items==="@board",i:r.items==="@board"?"":r.items,c:r.color||"blue"})};
+  bt.append(lo,tg);d.appendChild(bt);l.appendChild(d)});
+}
+function adminOpen(){
+ let t="ev";try{t=localStorage.getItem("zw_atab")||"ev"}catch(e){}
+ if(!document.querySelector('#atabs button[data-t="'+t+'"]'))t="ev";showTab(t);
+ if(EV&&!$("et").value){$("et").value=EV.title||"";$("ed").value=EV.desc||"";$("ek").value=(EV.keywords||[]).join(", ")}
+ if(SP&&!$("sti").value&&!$("sit").value&&!$("sbd").checked){$("sti").value=SP.title;if(String(SP.items).trim()==="@board")$("sbd").checked=true;else $("sit").value=SP.items;setColor(SP.color||"blue");stSync()}
+ drawSummary();spPrev();alPrev();adPrev();
+}
+function adminUI(){
+ document.querySelectorAll("#atabs button").forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+ const sw=$("swc");[["blue","#0a64c8"],["red","#c4281f"],["green","#0a7a45"],["amber","#b36b00"]].forEach(c=>{const b=document.createElement("button");b.dataset.c=c[0];b.style.background=c[1];b.title=c[0];b.onclick=()=>setColor(c[0]);sw.appendChild(b)});
+ setColor("blue");
+ $("sbd").onchange=stSync;$("sti").oninput=spPrev;$("sit").oninput=spPrev;$("alt").oninput=alPrev;$("adt").oninput=adPrev;
+ drawChips("tpst","zw_tpl_st",STB,stApply);drawChips("tpal","zw_tpl_al",ALB,alApply);
+ $("sptpl").onclick=()=>{const t=$("sti").value.trim();if(!t){$("amsg").textContent="Write a title first";return}const s=lsGet("zw_tpl_st");s.push({n:t.slice(0,20),t,b:$("sbd").checked?1:0,i:$("sbd").checked?"":$("sit").value.trim(),c:$("sco").value});lsSet("zw_tpl_st",s.slice(-8));drawChips("tpst","zw_tpl_st",STB,stApply);$("amsg").textContent="Template saved (on this browser)"};
+ $("altpl").onclick=()=>{const t=$("alt").value.trim();if(!t){$("amsg").textContent="Write the alert text first";return}const s=lsGet("zw_tpl_al");s.push({n:t.slice(0,20),i:t});lsSet("zw_tpl_al",s.slice(-8));drawChips("tpal","zw_tpl_al",ALB,alApply);$("amsg").textContent="Template saved (on this browser)"};
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("ad").hidden)$("ad").hidden=true});
+ setInterval(()=>{if(!$("ad").hidden)drawSummary()},2000);
+}
 /* admin: eventos y alertas */
 let EV=null,AL=[];
 const liveAL=()=>AL.filter(a=>!a.expires_at||new Date(a.expires_at)>new Date());
@@ -411,8 +499,12 @@ function loadAdminData(){
  loadExtra();loadCD();loadReports();sb.from("alerts").select("*").order("id",{ascending:false}).limit(20).then(({data})=>{AL=data||[];renderPins();drawAlerts()});
 }
 function drawAlerts(){
- const l=$("alist");l.innerHTML="";
- liveAL().forEach(a=>{const r=el("div","al");r.appendChild(el("span","",a.body));const b=el("button","x","DELETE");b.onclick=async()=>{await sb.from("alerts").delete().eq("id",a.id);loadAdminData()};r.appendChild(b);l.appendChild(r)});
+ const l=$("alist");if(!l)return;l.innerHTML="";const now=new Date();
+ if(!AL.length){l.appendChild(el("div","none","No alerts yet."));return}
+ AL.slice(0,12).forEach(a=>{const live=!a.expires_at||new Date(a.expires_at)>now,r=el("div","al"+(live?"":" off"));r.appendChild(el("span","",(live?"[ON] ":"")+a.body));
+  const bt=el("span","bt"),tg=el("button","x",live?"TURN OFF":"TURN ON (24h)");tg.onclick=async()=>{await sb.from("alerts").update({expires_at:live?new Date().toISOString():new Date(Date.now()+864e5).toISOString()}).eq("id",a.id);loadAdminData()};
+  const dl=el("button","x","DELETE");dl.onclick=async()=>{await sb.from("alerts").delete().eq("id",a.id);loadAdminData()};
+  bt.append(tg,dl);r.appendChild(bt);l.appendChild(r)});
 }
 async function addAlert(body,link,hours){
  const row={body:body.slice(0,200),link:link||null,expires_at:hours>0?new Date(Date.now()+hours*3600000).toISOString():null};
@@ -420,7 +512,7 @@ async function addAlert(body,link,hours){
 }
 function adminInit(){
  if(!sb)return;
- extraInit();$("adb").onclick=()=>{$("ad").hidden=false;drawAlerts()};$("aclose").onclick=()=>{$("ad").hidden=true};
+ extraInit();adminUI();$("adb").onclick=()=>{$("ad").hidden=false;drawAlerts();adminOpen()};$("aclose").onclick=()=>{$("ad").hidden=true};
  $("eset").onclick=async()=>{const t=$("et").value.trim();if(!t)return;
   await sb.from("events").update({active:false}).eq("active",true);
   const {error}=await sb.from("events").insert({title:t,descr:$("ed").value.trim(),keywords:$("ek").value.split(",").map(x=>x.trim()).filter(Boolean),active:true});
@@ -457,7 +549,7 @@ function loadReports(){
  if(!sb||!isAdmin)return;
  sb.from("reports").select("*").order("id",{ascending:false}).limit(30).then(({data})=>{
   const l=$("rplist");if(!l)return;l.innerHTML="";
-  const rs=data||[];if(!rs.length){l.appendChild(el("div","none","No reports."));return}
+  const rs=data||[];RPN=rs.length;$("rpn").textContent=RPN||"";if(!rs.length){l.appendChild(el("div","none","No reports."));return}
   rs.forEach(r=>{const d=el("div","rp2");d.appendChild(el("p","",(r.author_name||"?")+": "+(r.body||"")));const bt=el("div","bt");
    const del=el("button","","DELETE MESSAGE");del.onclick=async()=>{await sb.from("messages").delete().eq("id",r.message_id);await sb.from("reports").delete().eq("message_id",r.message_id);ROWS=ROWS.filter(x=>x.id!==r.message_id);redraw();loadReports()};
    const bk=el("button","x","BLOCK USER");bk.onclick=async()=>{if(!r.author_id||!confirm("Block this user?"))return;const {error}=await sb.from("blocked").upsert({user_id:r.author_id});$("amsg").textContent=error?error.message.slice(0,60):"User blocked"};
@@ -516,12 +608,19 @@ function showAd(){
  const l=$("pbl");l.textContent=a.body;if(a.link&&/^https?:\/\//i.test(a.link))l.href=a.link;else l.removeAttribute("href");
 }
 function loadExtra(){
+ if(isAdmin){sb.from("specials").select("*").order("id",{ascending:false}).limit(8).then(({data})=>drawSpHist(data||[]));
+ sb.from("promos").select("*").order("id",{ascending:false}).limit(15).then(({data})=>{ADA=data||[];drawAds()})}
  sb.from("specials").select("*").eq("active",true).order("id",{ascending:false}).limit(1).then(({data})=>{SP=data&&data[0]||null;renderSpecial()});
  sb.from("promos").select("*").eq("active",true).order("id",{ascending:false}).limit(20).then(({data,error})=>{if(error)$("amsg").textContent="ADS ERROR: "+error.message.slice(0,60);ADS=(data||[]).filter(a=>!a.expires_at||new Date(a.expires_at)>new Date());adi=0;showAd();drawAds()});
 }
 function drawAds(){
- const l=$("adlist");if(!l)return;l.innerHTML="";
- ADS.forEach(a=>{const r=el("div","al");r.appendChild(el("span","",a.body));const b=el("button","x","DELETE");b.onclick=async()=>{const {data,error}=await sb.from("promos").delete().eq("id",a.id).select();$("amsg").textContent=error?"DELETE ERROR: "+error.message.slice(0,50):(!data||!data.length)?"NOT DELETED (no permission)":"Ad deleted";ADS=ADS.filter(x=>x.id!==a.id);adi=0;showAd();drawAds();loadExtra()};r.appendChild(b);l.appendChild(r)});
+ const l=$("adlist");if(!l)return;l.innerHTML="";const list=ADA.length?ADA:ADS;
+ if(!list.length){l.appendChild(el("div","none","No ads yet."));return}
+ list.forEach(a=>{const live=a.active!==false&&(!a.expires_at||new Date(a.expires_at)>new Date()),r=el("div","al"+(live?"":" off"));r.appendChild(el("span","",(live?"[ON] ":"")+a.body));
+  const bt=el("span","bt"),tg=el("button","x",live?"TURN OFF":"TURN ON");
+  tg.onclick=async()=>{const {error}=await sb.from("promos").update(live?{active:false}:{active:true,expires_at:null}).eq("id",a.id);$("amsg").textContent=error?error.message.slice(0,60):(live?"Ad turned off":"Ad turned on");loadExtra()};
+  const b=el("button","x","DELETE");b.onclick=async()=>{const {data,error}=await sb.from("promos").delete().eq("id",a.id).select();$("amsg").textContent=error?"DELETE ERROR: "+error.message.slice(0,50):(!data||!data.length)?"NOT DELETED (no permission)":"Ad deleted";ADS=ADS.filter(x=>x.id!==a.id);ADA=ADA.filter(x=>x.id!==a.id);adi=0;showAd();drawAds();loadExtra()};
+  bt.append(tg,b);r.appendChild(bt);l.appendChild(r)});
 }
 setInterval(()=>{if(ADS.length){adi=(adi+1)%ADS.length;showAd()}},8000);
 setInterval(()=>{const c=Date.now()-864e5,n=ROWS.length;ROWS=ROWS.filter(r=>new Date(r.created_at)>c);if(ROWS.length!==n)redraw();renderNews()},60000);
@@ -540,12 +639,12 @@ function extraInit(){
  $("cdadd").onclick=async()=>{const t=$("cdt").value.trim(),v=$("cdd").value,tz=$("cdz").value;if(!t||!v){$("amsg").textContent="Write a title and pick a date and time";return}
   const m=v.match(/^(\d+)-(\d+)-(\d+)T(\d+):(\d+)/);const W=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5]);const g=W-offMin(tz,new Date(W))*6e4;const tg=W-offMin(tz,new Date(g))*6e4;
   const {error}=await sb.from("countdowns").insert({title:t,target:new Date(tg).toISOString(),tz});$("amsg").textContent=error?(/tz|countdowns/i.test(error.message)?"Run update6.sql and update7.sql in Supabase first":error.message.slice(0,60)):"Countdown added";$("cdt").value="";$("cdd").value="";loadCD()};
- $("sset").onclick=async()=>{const t=$("sti").value.trim(),it=$("sit").value.trim();if(!t||!it)return;await sb.from("specials").update({active:false}).eq("active",true);const {error}=await sb.from("specials").insert({title:t,items:it,color:$("sco").value});$("amsg").textContent=error?error.message.slice(0,60):"Special updated";loadExtra()};
- $("send2").onclick=async()=>{await sb.from("specials").update({active:false}).eq("active",true);$("amsg").textContent="Special ended";loadExtra()};
- $("adend").onclick=async()=>{await sb.from("promos").update({active:false}).eq("active",true);$("amsg").textContent="Ads ended";loadExtra()};
+ $("sset").onclick=async()=>{const t=$("sti").value.trim(),it=$("sbd").checked?"@board":$("sit").value.trim();if(!t||!it){$("amsg").textContent="Write a title and the text (or tick the board box)";return}await sb.from("specials").update({active:false}).eq("active",true);const {error}=await sb.from("specials").insert({title:t,items:it,color:$("sco").value});$("amsg").textContent=error?error.message.slice(0,60):"Strip published";loadExtra()};
+ $("send2").onclick=async()=>{await sb.from("specials").update({active:false}).eq("active",true);$("amsg").textContent="Strip turned off";loadExtra()};
+ $("adend").onclick=async()=>{await sb.from("promos").update({active:false}).eq("active",true);$("amsg").textContent="Ads turned off";loadExtra()};
  $("adadd").onclick=async()=>{const t=$("adt").value.trim();if(!t)return;const d=+$("ade").value;const {error}=await sb.from("promos").insert({body:t,link:$("adu").value.trim()||null,expires_at:d>0?new Date(Date.now()+d*864e5).toISOString():null});$("amsg").textContent=error?error.message.slice(0,60):"Ad added";$("adt").value="";$("adu").value="";loadExtra()};
 }
-function onAdmin(){$("adb").hidden=!isAdmin;renderNews();loadReports()}
+function onAdmin(){$("adb").hidden=!isAdmin;renderNews();loadReports();if(isAdmin)loadExtra()}
 /* buscador y silenciar */
 let sqT=null;
 $("sq").oninput=function(){clearTimeout(sqT);const v=this.value;sqT=setTimeout(()=>{const q=v.trim().toLowerCase();if(q){mode="custom";region="";filt=q;$("flt").textContent="Search: "+q}else{mode="main";region="";filt="";$("flt").textContent="Main: politics, economy, world affairs"}renderNews()},200)};
